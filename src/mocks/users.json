@@ -1,0 +1,38 @@
+[
+  {
+    "id": "user-1",
+    "supabaseUid": "sb-uid-001",
+    "email": "kim.minjun@example.com",
+    "nickname": "민준이",
+    "phone": "010-1234-5678",
+    "role": "USER",
+    "point": 3500,
+    "tutorialDone": true,
+    "createdAt": "2026-01-20T10:30:00.000Z",
+    "updatedAt": "2026-03-05T14:20:00.000Z"
+  },
+  {
+    "id": "user-2",
+    "supabaseUid": "sb-uid-002",
+    "email": "lee.soyeon@example.com",
+    "nickname": "소연쓰",
+    "phone": "010-9876-5432",
+    "role": "USER",
+    "point": 12000,
+    "tutorialDone": true,
+    "createdAt": "2026-02-01T08:15:00.000Z",
+    "updatedAt": "2026-03-08T11:00:00.000Z"
+  },
+  {
+    "id": "user-3",
+    "supabaseUid": "sb-uid-admin",
+    "email": "admin@randombox.kr",
+    "nickname": "관리자",
+    "phone": null,
+    "role": "ADMIN",
+    "point": 0,
+    "tutorialDone": true,
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-03-01T00:00:00.000Z"
+  }
+]

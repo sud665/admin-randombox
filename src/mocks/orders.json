@@ -1,0 +1,112 @@
+[
+  {
+    "id": "order-1",
+    "userId": "user-1",
+    "capsuleId": "cap-1",
+    "productId": "prod-2",
+    "status": "DELIVERED",
+    "pgPaymentId": "pg-pay-001",
+    "amount": 30000,
+    "createdAt": "2026-02-01T10:00:00.000Z",
+    "updatedAt": "2026-02-10T15:00:00.000Z"
+  },
+  {
+    "id": "order-2",
+    "userId": "user-1",
+    "capsuleId": "cap-2",
+    "productId": "prod-8",
+    "status": "STORED",
+    "pgPaymentId": "pg-pay-002",
+    "amount": 15000,
+    "createdAt": "2026-02-05T14:30:00.000Z",
+    "updatedAt": "2026-02-05T14:30:00.000Z"
+  },
+  {
+    "id": "order-3",
+    "userId": "user-2",
+    "capsuleId": "cap-1",
+    "productId": "prod-13",
+    "status": "DECOMPOSED",
+    "pgPaymentId": "pg-pay-003",
+    "amount": 30000,
+    "createdAt": "2026-02-10T09:00:00.000Z",
+    "updatedAt": "2026-02-12T11:00:00.000Z"
+  },
+  {
+    "id": "order-4",
+    "userId": "user-2",
+    "capsuleId": "cap-3",
+    "productId": "prod-10",
+    "status": "SHIPPING",
+    "pgPaymentId": "pg-pay-004",
+    "amount": 5000,
+    "createdAt": "2026-02-15T16:00:00.000Z",
+    "updatedAt": "2026-02-20T10:00:00.000Z"
+  },
+  {
+    "id": "order-5",
+    "userId": "user-1",
+    "capsuleId": "cap-3",
+    "productId": "prod-14",
+    "status": "OPENED",
+    "pgPaymentId": "pg-pay-005",
+    "amount": 5000,
+    "createdAt": "2026-02-20T12:00:00.000Z",
+    "updatedAt": "2026-02-20T12:00:00.000Z"
+  },
+  {
+    "id": "order-6",
+    "userId": "user-2",
+    "capsuleId": "cap-4",
+    "productId": "prod-1",
+    "status": "STORED",
+    "pgPaymentId": "pg-pay-006",
+    "amount": 50000,
+    "createdAt": "2026-03-01T10:00:00.000Z",
+    "updatedAt": "2026-03-01T10:00:00.000Z"
+  },
+  {
+    "id": "order-7",
+    "userId": "user-1",
+    "capsuleId": "cap-2",
+    "productId": "prod-6",
+    "status": "DELIVERED",
+    "pgPaymentId": "pg-pay-007",
+    "amount": 15000,
+    "createdAt": "2026-03-02T08:30:00.000Z",
+    "updatedAt": "2026-03-08T14:00:00.000Z"
+  },
+  {
+    "id": "order-8",
+    "userId": "user-2",
+    "capsuleId": "cap-2",
+    "productId": "prod-11",
+    "status": "SHIPPING",
+    "pgPaymentId": "pg-pay-008",
+    "amount": 15000,
+    "createdAt": "2026-03-03T11:00:00.000Z",
+    "updatedAt": "2026-03-06T09:00:00.000Z"
+  },
+  {
+    "id": "order-9",
+    "userId": "user-1",
+    "capsuleId": "cap-4",
+    "productId": "prod-3",
+    "status": "OPENED",
+    "pgPaymentId": "pg-pay-009",
+    "amount": 50000,
+    "createdAt": "2026-03-05T15:00:00.000Z",
+    "updatedAt": "2026-03-05T15:00:00.000Z"
+  },
+  {
+    "id": "order-10",
+    "userId": "user-2",
+    "capsuleId": "cap-3",
+    "productId": "prod-15",
+    "status": "DELIVERED",
+    "pgPaymentId": "pg-pay-010",
+    "amount": 5000,
+    "createdAt": "2026-03-07T13:00:00.000Z",
+    "updatedAt": "2026-03-10T16:00:00.000Z"
+  }
+]

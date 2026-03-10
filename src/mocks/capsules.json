@@ -1,0 +1,80 @@
+[
+  {
+    "id": "cap-1",
+    "name": "프리미엄 캡슐",
+    "description": "S~A급 상품이 포함된 프리미엄 캡슐! 아이패드 프로를 노려보세요.",
+    "price": 30000,
+    "imageUrl": "/images/capsules/premium.webp",
+    "status": "ACTIVE",
+    "createdAt": "2026-01-15T09:00:00.000Z",
+    "updatedAt": "2026-03-01T09:00:00.000Z",
+    "items": [
+      { "id": "ci-1", "capsuleId": "cap-1", "productId": "prod-1", "probability": 2, "stock": 5 },
+      { "id": "ci-2", "capsuleId": "cap-1", "productId": "prod-2", "probability": 3, "stock": 10 },
+      { "id": "ci-3", "capsuleId": "cap-1", "productId": "prod-3", "probability": 5, "stock": 15 },
+      { "id": "ci-4", "capsuleId": "cap-1", "productId": "prod-4", "probability": 5, "stock": 10 },
+      { "id": "ci-5", "capsuleId": "cap-1", "productId": "prod-5", "probability": 10, "stock": 20 },
+      { "id": "ci-6", "capsuleId": "cap-1", "productId": "prod-6", "probability": 15, "stock": 30 },
+      { "id": "ci-7", "capsuleId": "cap-1", "productId": "prod-10", "probability": 20, "stock": 50 },
+      { "id": "ci-8", "capsuleId": "cap-1", "productId": "prod-13", "probability": 40, "stock": 200 }
+    ]
+  },
+  {
+    "id": "cap-2",
+    "name": "스탠다드 캡슐",
+    "description": "A~B급 상품 위주의 균형 잡힌 캡슐. 가성비 최고!",
+    "price": 15000,
+    "imageUrl": "/images/capsules/standard.webp",
+    "status": "ACTIVE",
+    "createdAt": "2026-01-20T09:00:00.000Z",
+    "updatedAt": "2026-03-01T09:00:00.000Z",
+    "items": [
+      { "id": "ci-9", "capsuleId": "cap-2", "productId": "prod-5", "probability": 5, "stock": 10 },
+      { "id": "ci-10", "capsuleId": "cap-2", "productId": "prod-6", "probability": 10, "stock": 25 },
+      { "id": "ci-11", "capsuleId": "cap-2", "productId": "prod-7", "probability": 10, "stock": 20 },
+      { "id": "ci-12", "capsuleId": "cap-2", "productId": "prod-8", "probability": 15, "stock": 30 },
+      { "id": "ci-13", "capsuleId": "cap-2", "productId": "prod-9", "probability": 10, "stock": 20 },
+      { "id": "ci-14", "capsuleId": "cap-2", "productId": "prod-11", "probability": 20, "stock": 40 },
+      { "id": "ci-15", "capsuleId": "cap-2", "productId": "prod-14", "probability": 30, "stock": 100 }
+    ]
+  },
+  {
+    "id": "cap-3",
+    "name": "라이트 캡슐",
+    "description": "부담 없는 가격으로 즐기는 랜덤박스 입문용 캡슐!",
+    "price": 5000,
+    "imageUrl": "/images/capsules/light.webp",
+    "status": "ACTIVE",
+    "createdAt": "2026-02-01T09:00:00.000Z",
+    "updatedAt": "2026-03-01T09:00:00.000Z",
+    "items": [
+      { "id": "ci-16", "capsuleId": "cap-3", "productId": "prod-8", "probability": 5, "stock": 10 },
+      { "id": "ci-17", "capsuleId": "cap-3", "productId": "prod-10", "probability": 15, "stock": 30 },
+      { "id": "ci-18", "capsuleId": "cap-3", "productId": "prod-11", "probability": 15, "stock": 30 },
+      { "id": "ci-19", "capsuleId": "cap-3", "productId": "prod-12", "probability": 20, "stock": 50 },
+      { "id": "ci-20", "capsuleId": "cap-3", "productId": "prod-13", "probability": 20, "stock": 100 },
+      { "id": "ci-21", "capsuleId": "cap-3", "productId": "prod-14", "probability": 15, "stock": 80 },
+      { "id": "ci-22", "capsuleId": "cap-3", "productId": "prod-15", "probability": 10, "stock": 60 }
+    ]
+  },
+  {
+    "id": "cap-4",
+    "name": "시즌 한정 캡슐",
+    "description": "봄 시즌 한정! S급 당첨 확률 2배 UP! 놓치지 마세요!",
+    "price": 50000,
+    "imageUrl": "/images/capsules/season.webp",
+    "status": "ACTIVE",
+    "createdAt": "2026-03-01T09:00:00.000Z",
+    "updatedAt": "2026-03-01T09:00:00.000Z",
+    "items": [
+      { "id": "ci-23", "capsuleId": "cap-4", "productId": "prod-1", "probability": 5, "stock": 3 },
+      { "id": "ci-24", "capsuleId": "cap-4", "productId": "prod-2", "probability": 5, "stock": 5 },
+      { "id": "ci-25", "capsuleId": "cap-4", "productId": "prod-3", "probability": 10, "stock": 10 },
+      { "id": "ci-26", "capsuleId": "cap-4", "productId": "prod-4", "probability": 10, "stock": 10 },
+      { "id": "ci-27", "capsuleId": "cap-4", "productId": "prod-5", "probability": 15, "stock": 15 },
+      { "id": "ci-28", "capsuleId": "cap-4", "productId": "prod-6", "probability": 15, "stock": 20 },
+      { "id": "ci-29", "capsuleId": "cap-4", "productId": "prod-9", "probability": 15, "stock": 20 },
+      { "id": "ci-30", "capsuleId": "cap-4", "productId": "prod-12", "probability": 25, "stock": 50 }
+    ]
+  }
+]

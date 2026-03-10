@@ -1,0 +1,185 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Grade {
+  S
+  A
+  B
+  C
+  D
+}
+
+enum OrderStatus {
+  OPENED
+  STORED
+  DECOMPOSED
+  SHIPPING
+  DELIVERED
+}
+
+enum DeliveryStatus {
+  PENDING
+  PICKED_UP
+  IN_TRANSIT
+  DELIVERED
+}
+
+enum CapsuleStatus {
+  ACTIVE
+  SOLD_OUT
+  INACTIVE
+}
+
+model User {
+  id           String   @id @default(cuid())
+  supabaseUid  String   @unique
+  email        String   @unique
+  nickname     String
+  phone        String?
+  role         Role     @default(USER)
+  point        Int      @default(0)
+  tutorialDone Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  orders       Order[]
+  deliveries   Delivery[]
+  reviews      Review[]
+  feverWinners FeverWinner[]
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  imageUrl    String?
+  grade       Grade
+  marketPrice Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  capsuleItems CapsuleItem[]
+  orders       Order[]
+  reviews      Review[]
+  feverConfigs FeverConfig[]
+}
+
+model Capsule {
+  id          String        @id @default(cuid())
+  name        String
+  description String?
+  price       Int
+  imageUrl    String?
+  status      CapsuleStatus @default(ACTIVE)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  items  CapsuleItem[]
+  orders Order[]
+}
+
+model CapsuleItem {
+  id          String @id @default(cuid())
+  capsuleId   String
+  productId   String
+  probability Float
+  stock       Int
+
+  capsule Capsule @relation(fields: [capsuleId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+
+  @@unique([capsuleId, productId])
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  userId      String
+  capsuleId   String
+  productId   String
+  status      OrderStatus @default(OPENED)
+  pgPaymentId String?
+  amount      Int
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id])
+  capsule  Capsule   @relation(fields: [capsuleId], references: [id])
+  product  Product   @relation(fields: [productId], references: [id])
+  delivery Delivery?
+  review   Review?
+}
+
+model Delivery {
+  id          String         @id @default(cuid())
+  orderId     String         @unique
+  userId      String
+  address     String
+  trackingNo  String?
+  carrier     String?
+  shippingFee Int
+  status      DeliveryStatus @default(PENDING)
+  paidAt      DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id])
+  user  User  @relation(fields: [userId], references: [id])
+}
+
+model Review {
+  id           String   @id @default(cuid())
+  orderId      String   @unique
+  userId       String
+  productId    String
+  rating       Int
+  content      String
+  imageUrl     String?
+  isHallOfFame Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  order   Order   @relation(fields: [orderId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model FeverConfig {
+  id              String   @id @default(cuid())
+  targetAmount    Int
+  rewardProductId String
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+
+  rewardProduct Product       @relation(fields: [rewardProductId], references: [id])
+  winners       FeverWinner[]
+}
+
+model FeverProgress {
+  id            String   @id @default(cuid())
+  currentAmount Int      @default(0)
+  percentage    Float    @default(0)
+  isActive      Boolean  @default(true)
+  lastResetAt   DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model FeverWinner {
+  id            String   @id @default(cuid())
+  userId        String
+  feverConfigId String
+  productId     String
+  wonAt         DateTime @default(now())
+
+  user        User        @relation(fields: [userId], references: [id])
+  feverConfig FeverConfig @relation(fields: [feverConfigId], references: [id])
+}

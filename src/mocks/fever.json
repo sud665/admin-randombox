@@ -1,0 +1,26 @@
+{
+  "config": {
+    "id": "fever-config-1",
+    "targetAmount": 5000000,
+    "rewardProductId": "prod-1",
+    "isActive": true,
+    "createdAt": "2026-03-01T00:00:00.000Z"
+  },
+  "progress": {
+    "id": "fever-progress-1",
+    "currentAmount": 3250000,
+    "percentage": 65.0,
+    "isActive": true,
+    "lastResetAt": "2026-03-01T00:00:00.000Z",
+    "updatedAt": "2026-03-11T09:00:00.000Z"
+  },
+  "winners": [
+    {
+      "id": "fever-winner-1",
+      "userId": "user-2",
+      "feverConfigId": "fever-config-1",
+      "productId": "prod-1",
+      "wonAt": "2026-02-28T23:59:00.000Z"
+    }
+  ]
+}
