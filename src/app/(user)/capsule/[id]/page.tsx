@@ -40,7 +40,7 @@ export default async function CapsuleDetailPage({ params }: Props) {
   const isSoldOut = capsule.status === "SOLD_OUT";
 
   return (
-    <CapsuleDetailClient>
+    <CapsuleDetailClient capsule={capsule} isSoldOut={isSoldOut}>
       <div className="relative flex min-h-screen flex-col pb-20">
         {/* Hero Image */}
         <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
@@ -110,24 +110,6 @@ export default async function CapsuleDetailPage({ params }: Props) {
               포함 상품
             </h2>
             <ProductProbabilityList items={itemsWithProducts} />
-          </div>
-        </div>
-
-        {/* Sticky CTA */}
-        <div className="fixed bottom-0 left-0 right-0 z-50">
-          <div className="mx-auto max-w-[480px] border-t bg-white/95 px-4 py-3 backdrop-blur-sm">
-            <button
-              disabled={isSoldOut}
-              className={`w-full rounded-xl py-3.5 text-base font-bold text-white shadow-lg transition-all ${
-                isSoldOut
-                  ? "cursor-not-allowed bg-gray-300"
-                  : "bg-primary hover:bg-primary/90 active:scale-[0.98]"
-              }`}
-            >
-              {isSoldOut
-                ? "품절"
-                : `₩${capsule.price.toLocaleString()} 구매하기`}
-            </button>
           </div>
         </div>
       </div>
