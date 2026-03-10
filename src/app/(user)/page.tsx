@@ -1,6 +1,6 @@
-import { getCapsules, getFeverStatus } from "@/lib/data-source";
+import { getCapsules, getFeverStatus, getProductById } from "@/lib/data-source";
 import { CapsuleCard } from "@/components/user/capsule-card";
-import { FeverBar } from "@/components/user/fever-bar";
+import { FeverGaugeSection } from "@/components/user/fever-gauge-section";
 
 export default async function HomePage() {
   const [capsules, feverData] = await Promise.all([
@@ -8,13 +8,19 @@ export default async function HomePage() {
     getFeverStatus(),
   ]);
 
+  const rewardProduct = await getProductById(feverData.config.rewardProductId);
+
   return (
     <div>
-      {/* Fever Gauge */}
-      <FeverBar
-        percentage={feverData.progress.percentage}
-        currentAmount={feverData.progress.currentAmount}
-        targetAmount={feverData.config.targetAmount}
+      {/* Fever Gauge (full component) */}
+      <FeverGaugeSection
+        initialData={{
+          currentAmount: feverData.progress.currentAmount,
+          targetAmount: feverData.config.targetAmount,
+          percentage: feverData.progress.percentage,
+          isActive: feverData.progress.isActive,
+        }}
+        rewardProduct={rewardProduct}
       />
 
       {/* Capsule List */}
