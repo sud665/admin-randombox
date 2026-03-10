@@ -1,4 +1,4 @@
-import type { Capsule, Product, Order, Review, FeverProgress, FeverConfig, User } from '@/types'
+import type { Capsule, Product, Order, Review, FeverProgress, FeverConfig, FeverWinner, User } from '@/types'
 
 const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK === 'true'
 
@@ -73,4 +73,29 @@ export async function getUserById(id: string): Promise<User | null> {
     return (data as User[]).find(u => u.id === id) || null
   }
   return null
+}
+
+export async function getUsers(): Promise<User[]> {
+  if (USE_MOCK) {
+    const { default: data } = await import('@/mocks/users.json')
+    return data as User[]
+  }
+  return []
+}
+
+export async function getOrders(): Promise<Order[]> {
+  if (USE_MOCK) {
+    const { default: data } = await import('@/mocks/orders.json')
+    return data as Order[]
+  }
+  return []
+}
+
+export async function getFeverWinners(): Promise<FeverWinner[]> {
+  if (USE_MOCK) {
+    const { default: data } = await import('@/mocks/fever.json')
+    const fever = data as { winners: FeverWinner[] }
+    return fever.winners ?? []
+  }
+  return []
 }
