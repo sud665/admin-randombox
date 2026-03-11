@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { jsonResponse, errorResponse } from '@/lib/api-helpers'
+import { jsonResponse, errorResponse, isMockMode } from '@/lib/api-helpers'
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
       return errorResponse('email, password는 필수입니다.')
     }
 
-    const useMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true'
+    const useMock = isMockMode()
 
     if (useMock) {
       const { default: users } = await import('@/mocks/users.json')

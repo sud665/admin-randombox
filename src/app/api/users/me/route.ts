@@ -1,10 +1,10 @@
 import { NextRequest } from 'next/server'
-import { jsonResponse, errorResponse } from '@/lib/api-helpers'
+import { jsonResponse, errorResponse, isMockMode } from '@/lib/api-helpers'
 
 export async function GET(request: NextRequest) {
   try {
     const userId = request.headers.get('x-user-id') || 'user-1'
-    const useMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true'
+    const useMock = isMockMode()
 
     if (useMock) {
       const { default: users } = await import('@/mocks/users.json')
@@ -24,7 +24,7 @@ export async function PATCH(request: NextRequest) {
   try {
     const userId = request.headers.get('x-user-id') || 'user-1'
     const body = await request.json()
-    const useMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true'
+    const useMock = isMockMode()
 
     if (useMock) {
       const { default: users } = await import('@/mocks/users.json')

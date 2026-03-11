@@ -1,6 +1,7 @@
 import type { Capsule, Product, Order, Review, FeverProgress, FeverConfig, FeverWinner, User } from '@/types'
 
-const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK === 'true'
+// DATABASE_URL이 없으면 자동으로 mock 모드
+const USE_MOCK = !process.env.DATABASE_URL || process.env.NEXT_PUBLIC_USE_MOCK === 'true'
 
 export async function getCapsules(): Promise<Capsule[]> {
   if (USE_MOCK) {

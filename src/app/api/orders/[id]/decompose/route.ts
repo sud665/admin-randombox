@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { jsonResponse, errorResponse } from '@/lib/api-helpers'
+import { jsonResponse, errorResponse, isMockMode } from '@/lib/api-helpers'
 
 export async function POST(
   _request: NextRequest,
@@ -7,7 +7,7 @@ export async function POST(
 ) {
   try {
     const { id } = await params
-    const useMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true'
+    const useMock = isMockMode()
 
     if (useMock) {
       const { default: orders } = await import('@/mocks/orders.json')

@@ -1,10 +1,10 @@
 import { NextRequest } from 'next/server'
-import { jsonResponse, errorResponse } from '@/lib/api-helpers'
+import { jsonResponse, errorResponse, isMockMode } from '@/lib/api-helpers'
 
 export async function GET(request: NextRequest) {
   try {
     const userId = request.nextUrl.searchParams.get('userId') || request.headers.get('x-user-id')
-    const useMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true'
+    const useMock = isMockMode()
 
     if (useMock) {
       const { default: orders } = await import('@/mocks/orders.json')
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
       return errorResponse('capsuleId, amount는 필수입니다.')
     }
 
-    const useMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true'
+    const useMock = isMockMode()
 
     if (useMock) {
       return jsonResponse({

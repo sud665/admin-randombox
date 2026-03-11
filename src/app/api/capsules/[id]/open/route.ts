@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { jsonResponse, errorResponse } from '@/lib/api-helpers'
+import { jsonResponse, errorResponse, isMockMode } from '@/lib/api-helpers'
 import { drawProduct } from '@/lib/draw-logic'
 import type { CapsuleItem } from '@/types'
 
@@ -9,7 +9,7 @@ export async function POST(
 ) {
   try {
     const { id } = await params
-    const useMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true'
+    const useMock = isMockMode()
 
     if (useMock) {
       const { default: capsules } = await import('@/mocks/capsules.json')
