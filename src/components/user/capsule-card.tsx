@@ -1,10 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Package } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import type { Capsule } from "@/types";
+import {
+  CapsuleIllustration,
+  getCapsuleVariant,
+} from "@/components/user/capsule-illustration";
 
 const statusMap: Record<string, { label: string; className: string }> = {
   ACTIVE: {
@@ -26,9 +28,11 @@ interface CapsuleCardProps {
 }
 
 export function CapsuleCard({ capsule }: CapsuleCardProps) {
-  const totalStock = capsule.items?.reduce((sum, item) => sum + item.stock, 0) ?? 0;
+  const totalStock =
+    capsule.items?.reduce((sum, item) => sum + item.stock, 0) ?? 0;
   const isSoldOut = capsule.status === "SOLD_OUT";
   const status = statusMap[capsule.status] ?? statusMap.INACTIVE;
+  const variant = getCapsuleVariant(capsule.id);
 
   return (
     <Link href={`/capsule/${capsule.id}`}>
@@ -40,24 +44,12 @@ export function CapsuleCard({ capsule }: CapsuleCardProps) {
         whileTap={{ scale: 0.95 }}
         transition={{ type: "spring", stiffness: 400, damping: 25 }}
       >
-        {/* Image Area */}
+        {/* Capsule Illustration */}
         <div className="relative aspect-square w-full overflow-hidden">
-          {capsule.imageUrl ? (
-            <Image
-              src={capsule.imageUrl}
-              alt={capsule.name}
-              fill
-              className="object-cover transition-transform duration-300 group-hover:scale-110"
-              sizes="(max-width: 480px) 50vw, 240px"
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-violet-500 via-purple-500 to-indigo-600">
-              <Package className="h-12 w-12 text-white/70" />
-            </div>
-          )}
+          <CapsuleIllustration variant={variant} />
 
           {/* Status Badge */}
-          <div className="absolute right-2 top-2">
+          <div className="absolute right-2 top-2 z-20">
             <span
               className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold shadow-sm ${status.className}`}
             >

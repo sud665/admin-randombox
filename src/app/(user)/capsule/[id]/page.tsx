@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import { getCapsuleById, getProducts } from "@/lib/data-source";
 import { ProductProbabilityList } from "@/components/user/product-probability-list";
 import type { ItemWithProduct } from "@/components/user/product-probability-list";
 import { CapsuleDetailClient } from "./client";
+import { CapsuleDetailHero } from "@/components/user/capsule-detail-hero";
 
 export const dynamic = 'force-dynamic';
 
@@ -44,38 +44,8 @@ export default async function CapsuleDetailPage({ params }: Props) {
   return (
     <CapsuleDetailClient capsule={capsule} isSoldOut={isSoldOut}>
       <div className="relative flex min-h-screen flex-col pb-20">
-        {/* Hero Image */}
-        <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
-          {capsule.imageUrl ? (
-            <Image
-              src={capsule.imageUrl}
-              alt={capsule.name}
-              fill
-              className="object-cover"
-              sizes="480px"
-              priority
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-violet-500 via-purple-500 to-indigo-600">
-              <svg
-                className="h-20 w-20 text-white/50"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={1.5}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                />
-              </svg>
-            </div>
-          )}
-
-          {/* Gradient overlay at bottom */}
-          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white to-transparent" />
-        </div>
+        {/* Hero Capsule Illustration */}
+        <CapsuleDetailHero capsuleId={capsule.id} capsuleName={capsule.name} />
 
         {/* Content */}
         <div className="px-4 pt-2">
