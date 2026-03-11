@@ -77,10 +77,12 @@ export async function mockSignup(
 
 // 쿠키 기반 mock auth 상태 관리 (미들웨어 호환)
 export function setMockAuthCookie(user: User) {
+  if (typeof document === 'undefined') return
   document.cookie = `mock-auth-user=${encodeURIComponent(JSON.stringify({ id: user.id, role: user.role }))};path=/;max-age=${60 * 60 * 24 * 30}`
 }
 
 export function clearMockAuthCookie() {
+  if (typeof document === 'undefined') return
   document.cookie = 'mock-auth-user=;path=/;max-age=0'
 }
 

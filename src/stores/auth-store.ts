@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { persist, createJSONStorage } from 'zustand/middleware'
 import type { User } from '@/types'
 import { mockLogin, mockSignup, setMockAuthCookie, clearMockAuthCookie } from '@/lib/mock-auth'
 
@@ -68,6 +68,16 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'auth-storage',
+      storage: createJSONStorage(() => {
+        if (typeof window === 'undefined') {
+          return {
+            getItem: () => null,
+            setItem: () => {},
+            removeItem: () => {},
+          }
+        }
+        return localStorage
+      }),
       partialize: (state) => ({ user: state.user }),
     }
   )
