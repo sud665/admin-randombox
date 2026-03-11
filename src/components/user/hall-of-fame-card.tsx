@@ -40,7 +40,7 @@ export function HallOfFameCard({
       <div className="relative aspect-square w-full overflow-hidden bg-slate-100">
         {review.imageUrl || product?.imageUrl ? (
           <Image
-            src={review.imageUrl || product?.imageUrl || ""}
+            src={product?.imageUrl || review.imageUrl || ""}
             alt={product?.name || "상품"}
             fill
             className="object-cover"
