@@ -5,6 +5,8 @@ import { ProductProbabilityList } from "@/components/user/product-probability-li
 import type { ItemWithProduct } from "@/components/user/product-probability-list";
 import { CapsuleDetailClient } from "./client";
 
+export const dynamic = 'force-dynamic';
+
 interface Props {
   params: Promise<{ id: string }>;
 }

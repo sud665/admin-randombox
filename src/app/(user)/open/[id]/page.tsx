@@ -3,6 +3,8 @@ import { getCapsuleById, getProducts } from "@/lib/data-source"
 import { drawProduct } from "@/lib/draw-logic"
 import { OpenPageClient } from "./client"
 
+export const dynamic = 'force-dynamic'
+
 interface Props {
   params: Promise<{ id: string }>
 }

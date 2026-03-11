@@ -2,23 +2,27 @@ import { getCapsules, getFeverStatus, getProductById } from "@/lib/data-source";
 import { CapsuleCard } from "@/components/user/capsule-card";
 import { FeverGaugeSection } from "@/components/user/fever-gauge-section";
 
+export const dynamic = 'force-dynamic';
+
 export default async function HomePage() {
   const [capsules, feverData] = await Promise.all([
     getCapsules(),
     getFeverStatus(),
   ]);
 
-  const rewardProduct = await getProductById(feverData.config.rewardProductId);
+  const rewardProduct = feverData?.config?.rewardProductId
+    ? await getProductById(feverData.config.rewardProductId)
+    : null;
 
   return (
     <div>
       {/* Fever Gauge (full component) */}
       <FeverGaugeSection
         initialData={{
-          currentAmount: feverData.progress.currentAmount,
-          targetAmount: feverData.config.targetAmount,
-          percentage: feverData.progress.percentage,
-          isActive: feverData.progress.isActive,
+          currentAmount: feverData?.progress?.currentAmount ?? 0,
+          targetAmount: feverData?.config?.targetAmount ?? 5000000,
+          percentage: feverData?.progress?.percentage ?? 0,
+          isActive: feverData?.progress?.isActive ?? true,
         }}
         rewardProduct={rewardProduct}
       />
