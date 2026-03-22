@@ -89,7 +89,7 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
     target: horizontalRef,
     offset: ["start end", "end start"],
   });
-  const capsuleX = useTransform(capsuleScroll, [0, 1], ["10%", "-40%"]);
+  const capsuleX = useTransform(capsuleScroll, [0.1, 0.9], ["5%", "-15%"]);
 
   return (
     <div ref={containerRef} className="relative bg-white text-[#102e4a]">
