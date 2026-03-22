@@ -20,7 +20,7 @@ interface LandingPageProps {
 
 export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurrent, reviews }: LandingPageProps) {
   return (
-    <div className="bg-white text-zinc-900">
+    <div className="bg-white text-[#102e4a]">
       {/* ===== Hero Section ===== */}
       <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
         <Image
@@ -30,23 +30,23 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
           className="object-cover"
           priority
         />
-        <div className="absolute inset-0 bg-white/40" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#102e4a]/70 to-[#715aff]/40" />
         <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-4xl font-bold leading-tight tracking-tight text-zinc-900 md:text-6xl lg:text-7xl"
+            className="text-4xl font-bold leading-tight tracking-tight text-white md:text-6xl lg:text-7xl"
           >
             열어봐야 아는
             <br />
-            <span className="text-amber-500">짜릿한 순간</span>
+            <span className="text-[#55c1ff]">짜릿한 순간</span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="mt-6 text-lg text-zinc-600 md:text-xl"
+            className="mt-6 text-lg text-white/80 md:text-xl"
           >
             랜덤 캡슐 안에 숨겨진 상품을 만나보세요.
             <br className="hidden md:block" />
@@ -60,13 +60,13 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
           >
             <Link
               href="/signup"
-              className="rounded-full bg-amber-500 px-8 py-3.5 text-lg font-bold text-white shadow-lg transition hover:bg-amber-400 hover:shadow-xl"
+              className="rounded-full bg-[#715aff] px-8 py-3.5 text-lg font-bold text-white shadow-lg transition hover:bg-[#a682ff] hover:shadow-xl"
             >
               지금 시작하기
             </Link>
             <Link
               href="/login"
-              className="rounded-full border border-zinc-300 bg-white/80 px-8 py-3.5 text-lg font-medium text-zinc-700 backdrop-blur transition hover:border-zinc-400 hover:bg-white"
+              className="rounded-full border border-white/40 bg-white/10 px-8 py-3.5 text-lg font-medium text-white backdrop-blur transition hover:border-white/60 hover:bg-white/20"
             >
               로그인
             </Link>
@@ -77,21 +77,21 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
           transition={{ repeat: Infinity, duration: 2 }}
           className="absolute bottom-8 left-1/2 -translate-x-1/2"
         >
-          <div className="h-10 w-6 rounded-full border-2 border-zinc-400 p-1">
-            <div className="mx-auto h-2 w-1 rounded-full bg-zinc-400" />
+          <div className="h-10 w-6 rounded-full border-2 border-white/50 p-1">
+            <div className="mx-auto h-2 w-1 rounded-full bg-white/50" />
           </div>
         </motion.div>
       </section>
 
       {/* ===== 서비스 소개 섹션 ===== */}
-      <section className="bg-zinc-50 px-6 py-24 md:py-32">
+      <section className="bg-[#f8f6ff] px-6 py-24 md:py-32">
         <div className="mx-auto max-w-5xl">
           <motion.h2
             variants={fadeInUp}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
-            className="text-center text-3xl font-bold text-zinc-900 md:text-4xl"
+            className="text-center text-3xl font-bold text-[#102e4a] md:text-4xl"
           >
             3단계로 즐기는 랜덤박스
           </motion.h2>
@@ -125,12 +125,12 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
                 transition={{ delay: i * 0.15 }}
                 className="text-center"
               >
-                <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-amber-50 text-4xl shadow-sm">
+                <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-[#a682ff]/10 text-4xl shadow-sm">
                   {item.icon}
                 </div>
-                <span className="text-sm font-semibold text-amber-500">{item.step}</span>
-                <h3 className="mt-2 text-xl font-bold text-zinc-900">{item.title}</h3>
-                <p className="mt-3 leading-relaxed text-zinc-500">{item.desc}</p>
+                <span className="text-sm font-semibold text-[#715aff]">{item.step}</span>
+                <h3 className="mt-2 text-xl font-bold text-[#102e4a]">{item.title}</h3>
+                <p className="mt-3 leading-relaxed text-[#102e4a]/60">{item.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -145,7 +145,7 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
-            className="text-center text-3xl font-bold text-zinc-900 md:text-4xl"
+            className="text-center text-3xl font-bold text-[#102e4a] md:text-4xl"
           >
             지금 도전할 수 있는 캡슐
           </motion.h2>
@@ -158,7 +158,7 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
                 whileInView="visible"
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ delay: i * 0.1 }}
-                className="group overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm transition hover:border-amber-300 hover:shadow-md"
+                className="group overflow-hidden rounded-2xl border border-[#a682ff]/20 bg-white shadow-sm transition hover:border-[#715aff]/40 hover:shadow-md"
               >
                 <div className="relative aspect-square overflow-hidden">
                   {capsule.imageUrl ? (
@@ -169,15 +169,15 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
                       className="object-cover transition duration-500 group-hover:scale-105"
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-zinc-100 text-5xl">
+                    <div className="flex h-full w-full items-center justify-center bg-[#f8f6ff] text-5xl">
                       🎲
                     </div>
                   )}
                 </div>
                 <div className="p-4">
-                  <h3 className="text-lg font-bold text-zinc-900">{capsule.name}</h3>
-                  <p className="mt-1 line-clamp-2 text-sm text-zinc-500">{capsule.description}</p>
-                  <p className="mt-3 text-xl font-bold text-amber-500">
+                  <h3 className="text-lg font-bold text-[#102e4a]">{capsule.name}</h3>
+                  <p className="mt-1 line-clamp-2 text-sm text-[#102e4a]/50">{capsule.description}</p>
+                  <p className="mt-3 text-xl font-bold text-[#715aff]">
                     ₩{capsule.price.toLocaleString()}
                   </p>
                 </div>
@@ -188,23 +188,23 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
       </section>
 
       {/* ===== 피버 게이지 섹션 ===== */}
-      <section className="bg-amber-50 px-6 py-24 md:py-32">
+      <section className="bg-gradient-to-br from-[#715aff]/5 to-[#55c1ff]/10 px-6 py-24 md:py-32">
         <div className="mx-auto max-w-4xl text-center">
           <motion.h2
             variants={fadeInUp}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
-            className="text-3xl font-bold text-zinc-900 md:text-4xl"
+            className="text-3xl font-bold text-[#102e4a] md:text-4xl"
           >
-            함께 채우는 <span className="text-amber-500">피버 게이지</span>
+            함께 채우는 <span className="text-[#715aff]">피버 게이지</span>
           </motion.h2>
           <motion.p
             variants={fadeInUp}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
-            className="mt-4 text-lg text-zinc-500"
+            className="mt-4 text-lg text-[#102e4a]/60"
           >
             모든 구매가 모여 피버 게이지를 채웁니다.
             가득 차면 특별한 보상이 추첨됩니다!
@@ -216,18 +216,18 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
             viewport={{ once: true, margin: "-100px" }}
             className="mt-12"
           >
-            <div className="relative mx-auto h-6 max-w-lg overflow-hidden rounded-full bg-zinc-200">
+            <div className="relative mx-auto h-6 max-w-lg overflow-hidden rounded-full bg-[#102e4a]/10">
               <motion.div
                 initial={{ width: 0 }}
                 whileInView={{ width: `${feverPercentage}%` }}
                 viewport={{ once: true }}
                 transition={{ duration: 1.5, ease: "easeOut", delay: 0.3 }}
-                className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-amber-400 to-orange-400"
+                className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-[#715aff] to-[#55c1ff]"
               />
             </div>
-            <div className="mx-auto mt-4 flex max-w-lg justify-between text-sm text-zinc-500">
+            <div className="mx-auto mt-4 flex max-w-lg justify-between text-sm text-[#102e4a]/50">
               <span>₩{feverCurrent.toLocaleString()}</span>
-              <span className="font-bold text-amber-500">{feverPercentage}%</span>
+              <span className="font-bold text-[#715aff]">{feverPercentage}%</span>
               <span>₩{feverTarget.toLocaleString()}</span>
             </div>
           </motion.div>
@@ -242,7 +242,7 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
-            className="text-center text-3xl font-bold text-zinc-900 md:text-4xl"
+            className="text-center text-3xl font-bold text-[#102e4a] md:text-4xl"
           >
             실제 당첨 후기
           </motion.h2>
@@ -255,17 +255,17 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
                 whileInView="visible"
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ delay: i * 0.1 }}
-                className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm"
+                className="rounded-2xl border border-[#a682ff]/15 bg-white p-6 shadow-sm"
               >
-                <div className="flex items-center gap-1 text-amber-400">
+                <div className="flex items-center gap-1 text-[#a682ff]">
                   {Array.from({ length: review.rating }, (_, j) => (
                     <span key={j}>★</span>
                   ))}
                 </div>
-                <p className="mt-3 leading-relaxed text-zinc-600">{review.content}</p>
-                <div className="mt-4 flex items-center justify-between text-sm text-zinc-400">
+                <p className="mt-3 leading-relaxed text-[#102e4a]/70">{review.content}</p>
+                <div className="mt-4 flex items-center justify-between text-sm text-[#102e4a]/40">
                   <span>{review.nickname}</span>
-                  <span className="font-medium text-zinc-500">{review.productName}</span>
+                  <span className="font-medium text-[#5887ff]">{review.productName}</span>
                 </div>
               </motion.div>
             ))}
@@ -274,7 +274,7 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
       </section>
 
       {/* ===== CTA 섹션 ===== */}
-      <section className="bg-gradient-to-b from-amber-50 to-orange-50 px-6 py-24 text-center md:py-32">
+      <section className="bg-gradient-to-br from-[#a682ff]/10 via-[#5887ff]/10 to-[#55c1ff]/10 px-6 py-24 text-center md:py-32">
         <motion.div
           variants={fadeInUp}
           initial="hidden"
@@ -282,15 +282,15 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
           viewport={{ once: true, margin: "-100px" }}
           className="mx-auto max-w-2xl"
         >
-          <h2 className="text-3xl font-bold text-zinc-900 md:text-4xl">
-            다음 행운의 주인공은 <span className="text-amber-500">당신</span>입니다
+          <h2 className="text-3xl font-bold text-[#102e4a] md:text-4xl">
+            다음 행운의 주인공은 <span className="text-[#715aff]">당신</span>입니다
           </h2>
-          <p className="mt-4 text-lg text-zinc-500">
+          <p className="mt-4 text-lg text-[#102e4a]/60">
             지금 가입하고 첫 캡슐을 열어보세요.
           </p>
           <Link
             href="/signup"
-            className="mt-8 inline-block rounded-full bg-amber-500 px-10 py-4 text-lg font-bold text-white shadow-lg transition hover:bg-amber-400 hover:shadow-xl"
+            className="mt-8 inline-block rounded-full bg-gradient-to-r from-[#715aff] to-[#5887ff] px-10 py-4 text-lg font-bold text-white shadow-lg transition hover:from-[#a682ff] hover:to-[#55c1ff] hover:shadow-xl"
           >
             무료로 시작하기
           </Link>
@@ -298,12 +298,12 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
       </section>
 
       {/* ===== Footer ===== */}
-      <footer className="border-t border-zinc-200 bg-zinc-50 px-6 py-8">
-        <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 text-sm text-zinc-400 md:flex-row">
+      <footer className="border-t border-[#102e4a]/10 bg-[#f8f6ff] px-6 py-8">
+        <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 text-sm text-[#102e4a]/40 md:flex-row">
           <span>&copy; 2026 랜덤박스. All rights reserved.</span>
           <div className="flex gap-6">
-            <Link href="/login" className="transition hover:text-zinc-600">로그인</Link>
-            <Link href="/signup" className="transition hover:text-zinc-600">회원가입</Link>
+            <Link href="/login" className="transition hover:text-[#715aff]">로그인</Link>
+            <Link href="/signup" className="transition hover:text-[#715aff]">회원가입</Link>
           </div>
         </div>
       </footer>
