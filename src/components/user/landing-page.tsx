@@ -24,7 +24,7 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
       {/* ===== Hero Section ===== */}
       <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
         <Image
-          src="https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=1920&q=80&auto=format"
+          src="https://images.unsplash.com/photo-1513151233558-d860c5398176?w=1920&q=80&auto=format"
           alt="랜덤박스 히어로 배경"
           fill
           className="object-cover"
