@@ -17,19 +17,43 @@ const C = {
 } as const;
 
 /* ─── 애니메이션 헬퍼 ─── */
+const smooth = [0.25, 0.1, 0.25, 1] as const;       // cubic-bezier — CSS ease 동등
+const decel = [0.0, 0.0, 0.2, 1] as const;           // material decelerate
+
 const staggerContainer = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.08 } },
+  visible: { transition: { staggerChildren: 0.12, delayChildren: 0.05 } },
 };
 
 const wordReveal = {
-  hidden: { y: "100%", opacity: 0 },
-  visible: { y: 0, opacity: 1, transition: { duration: 0.6, ease: [0.33, 1, 0.68, 1] as const } },
+  hidden: { y: "110%", opacity: 0, filter: "blur(4px)" },
+  visible: {
+    y: "0%",
+    opacity: 1,
+    filter: "blur(0px)",
+    transition: { duration: 0.7, ease: decel },
+  },
+};
+
+/* 히어로 전체를 감싸는 순차 등장 */
+const heroStagger = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.18, delayChildren: 0.1 } },
+};
+
+const heroChild = {
+  hidden: { opacity: 0, y: 24, filter: "blur(6px)" },
+  visible: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.8, ease: smooth },
+  },
 };
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } },
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: smooth } },
 };
 
 /* ─── 3D 틸트 카드 ─── */
@@ -260,9 +284,9 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
 
       {/* ═══ Floating Nav ═══ */}
       <motion.nav
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 1, duration: 0.6 }}
+        initial={{ y: -40, opacity: 0, filter: "blur(8px)" }}
+        animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+        transition={{ delay: 1.2, duration: 1, ease: smooth }}
         className="fixed top-4 left-1/2 z-50 -translate-x-1/2"
       >
         <div className="flex items-center gap-6 rounded-full border border-white/20 bg-white/70 px-6 py-2.5 shadow-lg backdrop-blur-xl">
@@ -356,12 +380,16 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
           </AnimatePresence>
 
           {/* 메인 콘텐츠 (상자 사라진 후 등장) */}
+          <AnimatePresence>
           {showContent && (
-            <>
+            <motion.div
+              variants={heroStagger}
+              initial="hidden"
+              animate="visible"
+              className="flex flex-col items-center"
+            >
               <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
+                variants={heroChild}
                 className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#715aff]/20 bg-[#715aff]/5 px-4 py-1.5 text-sm font-medium"
                 style={{ color: C.slate }}
               >
@@ -369,7 +397,10 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
                 지금 {capsules.length}개 캡슐 오픈 가능
               </motion.div>
 
-              <h1 className="text-[clamp(2.5rem,8vw,7rem)] font-bold leading-[0.95] tracking-tight">
+              <motion.h1
+                variants={heroChild}
+                className="text-[clamp(2.5rem,8vw,7rem)] font-bold leading-[0.95] tracking-tight text-center"
+              >
                 <SplitText text="열어봐야 아는" />
                 <br />
                 <span
@@ -378,12 +409,10 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
                 >
                   <SplitText text="짜릿한 순간" />
                 </span>
-              </h1>
+              </motion.h1>
 
               <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8, duration: 0.6 }}
+                variants={heroChild}
                 className="mx-auto mt-8 max-w-xl text-lg text-[#102e4a]/50 md:text-xl"
               >
                 랜덤 캡슐 안에 숨겨진 상품을 만나보세요.
@@ -391,9 +420,7 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
               </motion.p>
 
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1, duration: 0.6 }}
+                variants={heroChild}
                 className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
               >
                 <div className="group relative rounded-full p-[2px]">
@@ -419,8 +446,9 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
                   이미 계정이 있나요?
                 </Link>
               </motion.div>
-            </>
+            </motion.div>
           )}
+          </AnimatePresence>
         </div>
 
         {/* Scroll indicator */}
@@ -428,7 +456,7 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1, y: [0, 12, 0] }}
-            transition={{ opacity: { delay: 1.5 }, y: { repeat: Infinity, duration: 2 } }}
+            transition={{ opacity: { delay: 2, duration: 1 }, y: { repeat: Infinity, duration: 2.5, ease: smooth } }}
             className="absolute bottom-8 left-1/2 -translate-x-1/2"
           >
             <div className="flex flex-col items-center gap-2 text-[10px] font-medium uppercase tracking-widest text-[#102e4a]/30">
