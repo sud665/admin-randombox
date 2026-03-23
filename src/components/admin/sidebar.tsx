@@ -37,7 +37,7 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
           href="/admin/dashboard"
           className="text-lg font-bold text-primary"
         >
-          랜덤박스 관리자
+          RANDBOX 관리자
         </Link>
       </div>
       <nav className="flex-1 space-y-1 p-3">

@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Flame } from "lucide-react";
 import { useFeverStore } from "@/stores/fever-store";
+import { Logo } from "@/components/ui/logo";
 
 export function UserHeader() {
   const { percentage } = useFeverStore();
@@ -18,7 +19,7 @@ export function UserHeader() {
   return (
     <header className="sticky top-0 z-40 border-b bg-white/80 backdrop-blur-sm">
       <div className="flex h-14 items-center justify-between px-4">
-        <h1 className="text-xl font-bold text-primary">랜덤박스</h1>
+        <Logo size="md" />
 
         <div className="flex items-center gap-2">
           <Flame

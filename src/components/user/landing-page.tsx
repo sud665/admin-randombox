@@ -5,6 +5,7 @@ import { motion, useScroll, useTransform, useMotionValue, useSpring, AnimatePres
 import Image from "next/image";
 import Link from "next/link";
 import type { Capsule } from "@/types";
+import { Logo } from "@/components/ui/logo";
 
 /* ─── 팔레트 ─── */
 const C = {
@@ -188,6 +189,22 @@ function GiftBox({ phase }: { phase: "closed" | "opening" | "opened" }) {
   );
 }
 
+/* ─── 랜딩용 기본 리뷰 데이터 ─── */
+const LANDING_REVIEWS = [
+  { content: "3,000원 캡슐에서 에어팟 프로 나왔습니다… 손이 떨렸어요 진짜로. 친구한테 자랑했더니 아무도 안 믿어줌 ㅋㅋ", rating: 5, productName: "에어팟 프로 2", nickname: "럭키보이" },
+  { content: "반신반의하면서 라이트 캡슐 열었는데 스타벅스 텀블러 당첨! 가격 대비 이 정도면 완전 이득이죠. 매주 하나씩 열어보는 재미가 있어요.", rating: 5, productName: "스타벅스 텀블러", nickname: "커피중독자" },
+  { content: "D급이라 별 기대 안 했는데 귀여운 키링이랑 스티커 세트 왔어요. 포장도 깔끔하고 소소하게 기분 좋아지는 느낌!", rating: 4, productName: "캐릭터 키링 세트", nickname: "모닝글로리" },
+  { content: "프리미엄 캡슐 질렀는데 아이패드 미니 당첨됐습니다. 실화인가 싶어서 세 번 확인함. 배송도 이틀 만에 와서 놀랐어요.", rating: 5, productName: "아이패드 미니", nickname: "갓생러" },
+  { content: "솔직히 처음엔 뽑기라 좀 찝찝했는데, 분해 기능으로 포인트 전환되니까 손해 보는 느낌 없어요. B급 나왔는데 블루투스 스피커라 꽤 만족!", rating: 4, productName: "JBL 블루투스 스피커", nickname: "음악덕후" },
+  { content: "피버 이벤트 때 닌텐도 스위치 당첨된 사람입니다. 커뮤니티 게이지 같이 채우는 거 은근 중독성 있어요. 다음 피버도 기대 중!", rating: 5, productName: "닌텐도 스위치", nickname: "겜돌이" },
+  { content: "5,000원짜리 캡슐 3개 열었는데 다이슨 에어랩 나옴 ㄷㄷ 역대급 운이었던 것 같아요. 여자친구 선물로 줬더니 대반응!", rating: 5, productName: "다이슨 에어랩", nickname: "선물장인" },
+  { content: "매번 C~D급 나오다가 드디어 S급 떴어요!! 갤럭시 버즈 당첨. 꾸준히 하면 진짜 나오긴 하는구나 싶었습니다.", rating: 5, productName: "갤럭시 버즈 3 프로", nickname: "끈기의달인" },
+  { content: "가벼운 마음으로 라이트 캡슐 열었다가 올리브영 기프트카드 5만원권 당첨. 쏠쏠하네요~ 다음 달에도 도전할 예정!", rating: 4, productName: "올리브영 기프트카드", nickname: "뷰티러버" },
+  { content: "회사 점심시간에 심심해서 열어봤는데 애플워치 SE 나왔어요. 팀원들이 다 몰려와서 구경함 ㅋㅋ 회사에서 제일 유명해졌습니다.", rating: 5, productName: "애플워치 SE", nickname: "직장인J" },
+  { content: "처음이라 제일 싼 캡슐로 시작했어요. 귀여운 양말 세트 나왔는데 퀄리티가 생각보다 좋아서 오히려 만족! D급도 괜찮네요.", rating: 4, productName: "디자인 양말 세트", nickname: "양말수집가" },
+  { content: "분해해서 모은 포인트로 프리미엄 캡슐 도전했더니 B급 무선 충전기 당첨. 전략적으로 하면 더 재밌어요.", rating: 4, productName: "삼성 무선 충전기", nickname: "전략가K" },
+];
+
 /* ─── Props ─── */
 interface LandingPageProps {
   capsules: Capsule[];
@@ -206,7 +223,26 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
     target: horizontalRef,
     offset: ["start end", "end start"],
   });
-  const capsuleX = useTransform(capsuleScroll, [0.1, 0.9], ["5%", "-15%"]);
+  const capsuleX = useTransform(capsuleScroll, [0.15, 0.85], ["10%", "-55%"]);
+
+  /* 캡슐 목록을 3배로 반복 → 스크롤 의미 부여 */
+  const repeatedCapsules = useMemo(() => {
+    if (capsules.length === 0) return [];
+    const result = [];
+    for (let r = 0; r < 3; r++) {
+      for (const c of capsules) {
+        result.push({ ...c, _key: `${c.id}-${r}` });
+      }
+    }
+    return result;
+  }, [capsules]);
+
+  /* DB 리뷰 + 랜딩 기본 리뷰 병합 (중복 닉네임 제거, 최대 12개) */
+  const allReviews = useMemo(() => {
+    const seen = new Set(reviews.map((r) => r.nickname));
+    const extra = LANDING_REVIEWS.filter((r) => !seen.has(r.nickname));
+    return [...reviews, ...extra].slice(0, 12);
+  }, [reviews]);
 
   /* ─── 상자 오프닝 시퀀스 ─── */
   const [boxPhase, setBoxPhase] = useState<"closed" | "opening" | "opened" | "done">("closed");
@@ -230,7 +266,7 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
         className="fixed top-4 left-1/2 z-50 -translate-x-1/2"
       >
         <div className="flex items-center gap-6 rounded-full border border-white/20 bg-white/70 px-6 py-2.5 shadow-lg backdrop-blur-xl">
-          <span className="text-sm font-bold" style={{ color: C.slate }}>랜덤박스</span>
+          <Logo size="sm" />
           <div className="hidden items-center gap-5 text-xs font-medium text-[#102e4a]/60 sm:flex">
             <a href="#how" className="transition hover:text-[#715aff]">이용방법</a>
             <a href="#capsules" className="transition hover:text-[#715aff]">캡슐</a>
@@ -505,9 +541,9 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
           </motion.h2>
         </div>
         <motion.div style={{ x: capsuleX }} className="mt-12 flex gap-6 px-6">
-          {capsules.map((capsule) => (
+          {repeatedCapsules.map((capsule) => (
             <TiltCard
-              key={capsule.id}
+              key={capsule._key}
               className="w-[320px] flex-shrink-0 cursor-pointer overflow-hidden rounded-3xl border border-[#a682ff]/15 bg-white shadow-sm"
             >
               <div className="relative aspect-[4/3] overflow-hidden">
@@ -549,68 +585,65 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
           }}
         />
         <div className="relative mx-auto max-w-4xl">
-          <div className="grid items-center gap-12 md:grid-cols-2">
-            <div>
-              <motion.p
-                variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
-                className="text-sm font-semibold uppercase tracking-widest"
+          <div className="mb-12 text-center">
+            <motion.p
+              variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
+              className="text-sm font-semibold uppercase tracking-widest"
+              style={{ color: C.slate }}
+            >
+              Community Fever
+            </motion.p>
+            <motion.h2
+              variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
+              className="mt-3 text-3xl font-bold md:text-5xl"
+            >
+              함께 채우는{" "}
+              <span
+                className="bg-clip-text text-transparent"
+                style={{ backgroundImage: `linear-gradient(135deg, ${C.slate}, ${C.maya})` }}
+              >
+                피버 게이지
+              </span>
+            </motion.h2>
+            <motion.p
+              variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
+              className="mx-auto mt-4 max-w-lg leading-relaxed text-[#102e4a]/50"
+            >
+              모든 구매가 모여 피버 게이지를 채웁니다. 목표 금액에 도달하면 특별한 보상이 추첨됩니다!
+            </motion.p>
+          </div>
+          <motion.div
+            variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
+            className="mx-auto max-w-xl rounded-3xl border border-[#715aff]/10 bg-gradient-to-br from-[#715aff]/5 to-[#55c1ff]/5 p-8"
+          >
+            <div className="text-center">
+              <motion.span
+                initial={{ opacity: 0, scale: 0.5 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ type: "spring", stiffness: 200, delay: 0.3 }}
+                className="text-5xl font-black"
                 style={{ color: C.slate }}
               >
-                Community Fever
-              </motion.p>
-              <motion.h2
-                variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
-                className="mt-3 text-3xl font-bold md:text-5xl"
-              >
-                함께 채우는{" "}
-                <span
-                  className="bg-clip-text text-transparent"
-                  style={{ backgroundImage: `linear-gradient(135deg, ${C.slate}, ${C.maya})` }}
-                >
-                  피버 게이지
-                </span>
-              </motion.h2>
-              <motion.p
-                variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
-                className="mt-4 leading-relaxed text-[#102e4a]/50"
-              >
-                모든 구매가 모여 피버 게이지를 채웁니다. 목표 금액에 도달하면 특별한 보상이 추첨됩니다!
-              </motion.p>
+                {feverPercentage}%
+              </motion.span>
+              <p className="mt-1 text-sm text-[#102e4a]/40">달성률</p>
             </div>
-
-            <motion.div
-              variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
-              className="rounded-3xl border border-[#715aff]/10 bg-gradient-to-br from-[#715aff]/5 to-[#55c1ff]/5 p-8"
-            >
-              <div className="text-center">
-                <motion.span
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ type: "spring", stiffness: 200, delay: 0.3 }}
-                  className="text-5xl font-black"
-                  style={{ color: C.slate }}
-                >
-                  {feverPercentage}%
-                </motion.span>
-                <p className="mt-1 text-sm text-[#102e4a]/40">달성률</p>
-              </div>
-              <div className="mt-6 h-3 overflow-hidden rounded-full bg-[#102e4a]/5">
-                <motion.div
-                  initial={{ width: 0 }}
-                  whileInView={{ width: `${feverPercentage}%` }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 1.5, ease: "easeOut" as const, delay: 0.5 }}
-                  className="h-full rounded-full"
-                  style={{ background: `linear-gradient(90deg, ${C.slate}, ${C.cornflower}, ${C.maya})` }}
-                />
-              </div>
-              <div className="mt-3 flex justify-between text-xs text-[#102e4a]/40">
-                <span>₩{feverCurrent.toLocaleString()}</span>
-                <span>₩{feverTarget.toLocaleString()}</span>
-              </div>
-            </motion.div>
-          </div>
+            <div className="mt-6 h-3 overflow-hidden rounded-full bg-[#102e4a]/5">
+              <motion.div
+                initial={{ width: 0 }}
+                whileInView={{ width: `${feverPercentage}%` }}
+                viewport={{ once: true }}
+                transition={{ duration: 1.5, ease: "easeOut" as const, delay: 0.5 }}
+                className="h-full rounded-full"
+                style={{ background: `linear-gradient(90deg, ${C.slate}, ${C.cornflower}, ${C.maya})` }}
+              />
+            </div>
+            <div className="mt-3 flex justify-between text-xs text-[#102e4a]/40">
+              <span>₩{feverCurrent.toLocaleString()}</span>
+              <span>₩{feverTarget.toLocaleString()}</span>
+            </div>
+          </motion.div>
         </div>
       </section>
 
@@ -631,8 +664,8 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
             실제 당첨 후기
           </motion.h2>
 
-          <div className="mt-12 grid gap-6 md:grid-cols-2">
-            {reviews.map((review, i) => (
+          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {allReviews.map((review, i) => (
               <TiltCard
                 key={i}
                 className="rounded-3xl border border-white bg-white/80 p-6 shadow-sm backdrop-blur"
@@ -705,7 +738,7 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
       {/* ═══ Footer ═══ */}
       <footer className="border-t border-[#102e4a]/5 px-6 py-8">
         <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 text-sm text-[#102e4a]/30 md:flex-row">
-          <span>&copy; 2026 랜덤박스. All rights reserved.</span>
+          <span className="flex items-center gap-1.5">&copy; 2026 <Logo size="sm" /> All rights reserved.</span>
           <div className="flex gap-6">
             <Link href="/login" className="transition hover:text-[#715aff]">로그인</Link>
             <Link href="/signup" className="transition hover:text-[#715aff]">회원가입</Link>
