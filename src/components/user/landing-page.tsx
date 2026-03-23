@@ -20,37 +20,6 @@ const C = {
 const smooth = [0.25, 0.1, 0.25, 1] as const;       // cubic-bezier — CSS ease 동등
 const decel = [0.0, 0.0, 0.2, 1] as const;           // material decelerate
 
-const staggerContainer = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.12, delayChildren: 0.05 } },
-};
-
-const wordReveal = {
-  hidden: { y: "110%", opacity: 0, filter: "blur(4px)" },
-  visible: {
-    y: "0%",
-    opacity: 1,
-    filter: "blur(0px)",
-    transition: { duration: 0.7, ease: decel },
-  },
-};
-
-/* 히어로 전체를 감싸는 순차 등장 */
-const heroStagger = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.18, delayChildren: 0.1 } },
-};
-
-const heroChild = {
-  hidden: { opacity: 0, y: 24, filter: "blur(6px)" },
-  visible: {
-    opacity: 1,
-    y: 0,
-    filter: "blur(0px)",
-    transition: { duration: 0.8, ease: smooth },
-  },
-};
-
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: smooth } },
@@ -78,21 +47,6 @@ function TiltCard({ children, className }: { children: React.ReactNode; classNam
     >
       {children}
     </motion.div>
-  );
-}
-
-/* ─── 단어별 리빌 텍스트 ─── */
-function SplitText({ text, className }: { text: string; className?: string }) {
-  return (
-    <motion.span variants={staggerContainer} className={className}>
-      {text.split(" ").map((word, i) => (
-        <span key={i} className="inline-block overflow-hidden">
-          <motion.span variants={wordReveal} className="inline-block">
-            {word}&nbsp;
-          </motion.span>
-        </span>
-      ))}
-    </motion.span>
   );
 }
 
@@ -380,16 +334,12 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
           </AnimatePresence>
 
           {/* 메인 콘텐츠 (상자 사라진 후 등장) */}
-          <AnimatePresence>
           {showContent && (
-            <motion.div
-              variants={heroStagger}
-              initial="hidden"
-              animate="visible"
-              className="flex flex-col items-center"
-            >
+            <div className="flex flex-col items-center">
               <motion.div
-                variants={heroChild}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: smooth }}
                 className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#715aff]/20 bg-[#715aff]/5 px-4 py-1.5 text-sm font-medium"
                 style={{ color: C.slate }}
               >
@@ -397,46 +347,41 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
                 지금 {capsules.length}개 캡슐 오픈 가능
               </motion.div>
 
-              <motion.div variants={heroChild}>
-                <h1 className="text-[clamp(2.5rem,8vw,7rem)] font-bold leading-[0.95] tracking-tight text-center">
+              <h1 className="text-[clamp(2.5rem,8vw,7rem)] font-bold leading-[0.95] tracking-tight text-center">
+                {"열어봐야 아는".split("").map((char, i) => (
                   <motion.span
-                    variants={staggerContainer}
-                    initial="hidden"
-                    animate="visible"
+                    key={`a-${i}`}
+                    initial={{ opacity: 0, y: 40 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.2 + i * 0.04, ease: decel }}
+                    className="inline-block"
                   >
-                    {"열어봐야 아는".split(" ").map((word, i) => (
-                      <span key={i} className="inline-block overflow-hidden">
-                        <motion.span variants={wordReveal} className="inline-block">
-                          {word}&nbsp;
-                        </motion.span>
-                      </span>
-                    ))}
+                    {char === " " ? "\u00A0" : char}
                   </motion.span>
-                  <br />
-                  <span
-                    className="bg-clip-text text-transparent"
-                    style={{ backgroundImage: `linear-gradient(135deg, ${C.slate}, ${C.cornflower}, ${C.maya})` }}
-                  >
+                ))}
+                <br />
+                <span
+                  className="bg-clip-text text-transparent"
+                  style={{ backgroundImage: `linear-gradient(135deg, ${C.slate}, ${C.cornflower}, ${C.maya})` }}
+                >
+                  {"짜릿한 순간".split("").map((char, i) => (
                     <motion.span
-                      variants={staggerContainer}
-                      initial="hidden"
-                      animate="visible"
-                      transition={{ delayChildren: 0.3 }}
+                      key={`b-${i}`}
+                      initial={{ opacity: 0, y: 40 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: 0.5 + i * 0.04, ease: decel }}
+                      className="inline-block"
                     >
-                      {"짜릿한 순간".split(" ").map((word, i) => (
-                        <span key={i} className="inline-block overflow-hidden">
-                          <motion.span variants={wordReveal} className="inline-block">
-                            {word}&nbsp;
-                          </motion.span>
-                        </span>
-                      ))}
+                      {char === " " ? "\u00A0" : char}
                     </motion.span>
-                  </span>
-                </h1>
-              </motion.div>
+                  ))}
+                </span>
+              </h1>
 
               <motion.p
-                variants={heroChild}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.9, ease: smooth }}
                 className="mx-auto mt-8 max-w-xl text-lg text-[#102e4a]/50 md:text-xl"
               >
                 랜덤 캡슐 안에 숨겨진 상품을 만나보세요.
@@ -444,7 +389,9 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
               </motion.p>
 
               <motion.div
-                variants={heroChild}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 1.1, ease: smooth }}
                 className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
               >
                 <div className="group relative rounded-full p-[2px]">
@@ -470,9 +417,8 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
                   이미 계정이 있나요?
                 </Link>
               </motion.div>
-            </motion.div>
+            </div>
           )}
-          </AnimatePresence>
         </div>
 
         {/* Scroll indicator */}
