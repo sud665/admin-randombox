@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
+import { useRef, useState, useEffect, useMemo } from "react";
+import { motion, useScroll, useTransform, useMotionValue, useSpring, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import type { Capsule } from "@/types";
@@ -71,6 +71,123 @@ function SplitText({ text, className }: { text: string; className?: string }) {
   );
 }
 
+/* ─── 컨페티 파티클 ─── */
+function Confetti({ count = 60 }: { count?: number }) {
+  const particles = useMemo(() =>
+    Array.from({ length: count }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      color: [C.periwinkle, C.slate, C.cornflower, C.maya, "#fbbf24", "#f472b6"][Math.floor(Math.random() * 6)],
+      size: Math.random() * 8 + 4,
+      delay: Math.random() * 0.5,
+      duration: Math.random() * 1.5 + 1.5,
+      rotation: Math.random() * 360,
+      shape: Math.random() > 0.5 ? "circle" : "rect",
+    })),
+  [count]);
+
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {particles.map((p) => (
+        <motion.div
+          key={p.id}
+          initial={{ y: "40vh", x: `${p.x}vw`, opacity: 1, scale: 0, rotate: 0 }}
+          animate={{
+            y: [null, `${-20 - Math.random() * 80}vh`],
+            x: [null, `${p.x + (Math.random() - 0.5) * 30}vw`],
+            opacity: [1, 1, 0],
+            scale: [0, 1.2, 0.8],
+            rotate: [0, p.rotation + 360],
+          }}
+          transition={{ duration: p.duration, delay: p.delay, ease: "easeOut" as const }}
+          className="absolute"
+          style={{
+            width: p.size,
+            height: p.shape === "rect" ? p.size * 1.5 : p.size,
+            backgroundColor: p.color,
+            borderRadius: p.shape === "circle" ? "50%" : "2px",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+/* ─── 선물상자 SVG ─── */
+function GiftBox({ phase }: { phase: "closed" | "opening" | "opened" }) {
+  return (
+    <div className="relative mx-auto" style={{ width: 180, height: 200 }}>
+      {/* 빛 효과 (열릴 때) */}
+      <AnimatePresence>
+        {(phase === "opening" || phase === "opened") && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.3 }}
+            animate={{ opacity: [0, 0.8, 0], scale: [0.3, 2.5, 3] }}
+            transition={{ duration: 1.5, ease: "easeOut" as const }}
+            className="absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2"
+            style={{
+              width: 300,
+              height: 300,
+              borderRadius: "50%",
+              background: `radial-gradient(circle, ${C.maya}60, ${C.cornflower}30, transparent 70%)`,
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* 상자 본체 */}
+      <motion.svg
+        viewBox="0 0 180 200"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="relative z-10"
+      >
+        {/* 상자 본체 */}
+        <motion.rect x="20" y="90" width="140" height="100" rx="8" fill={C.slate} />
+        <motion.rect x="20" y="90" width="140" height="100" rx="8" fill="url(#boxGrad)" />
+        {/* 세로 리본 */}
+        <rect x="80" y="90" width="20" height="100" fill={C.maya} opacity="0.6" />
+        {/* 가로 리본 */}
+        <rect x="20" y="125" width="140" height="20" fill={C.maya} opacity="0.6" />
+
+        {/* 뚜껑 */}
+        <motion.g
+          animate={
+            phase === "opening" ? { y: -60, rotateX: -50, opacity: 0 } :
+            phase === "opened" ? { y: -80, opacity: 0 } :
+            { y: 0, opacity: 1 }
+          }
+          transition={{ duration: 0.8, ease: "easeOut" as const }}
+          style={{ originX: 0.5, originY: 1 }}
+        >
+          <rect x="12" y="70" width="156" height="30" rx="6" fill={C.cornflower} />
+          <rect x="80" y="70" width="20" height="30" fill={C.maya} opacity="0.6" />
+          {/* 리본 매듭 */}
+          <ellipse cx="75" cy="65" rx="16" ry="20" transform="rotate(-15 75 65)" fill={C.cornflower} />
+          <ellipse cx="105" cy="65" rx="16" ry="20" transform="rotate(15 105 65)" fill={C.cornflower} />
+          <circle cx="90" cy="70" r="10" fill={C.maya} />
+        </motion.g>
+
+        {/* 반짝임 */}
+        <motion.g
+          animate={{ opacity: [0.4, 1, 0.4] }}
+          transition={{ repeat: Infinity, duration: 2 }}
+        >
+          <path d="M155 80l3 5 5 3-5 3-3 5-3-5-5-3 5-3z" fill="white" opacity="0.8" />
+          <path d="M35 100l2 3 3 2-3 2-2 3-2-3-3-2 3-2z" fill="white" opacity="0.6" />
+        </motion.g>
+
+        <defs>
+          <linearGradient id="boxGrad" x1="20" y1="90" x2="160" y2="190" gradientUnits="userSpaceOnUse">
+            <stop stopColor={C.slate} />
+            <stop offset="1" stopColor={C.periwinkle} />
+          </linearGradient>
+        </defs>
+      </motion.svg>
+    </div>
+  );
+}
+
 /* ─── Props ─── */
 interface LandingPageProps {
   capsules: Capsule[];
@@ -90,6 +207,17 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
     offset: ["start end", "end start"],
   });
   const capsuleX = useTransform(capsuleScroll, [0.1, 0.9], ["5%", "-15%"]);
+
+  /* ─── 상자 오프닝 시퀀스 ─── */
+  const [boxPhase, setBoxPhase] = useState<"closed" | "opening" | "opened" | "done">("closed");
+  const [showContent, setShowContent] = useState(false);
+
+  useEffect(() => {
+    const t1 = setTimeout(() => setBoxPhase("opening"), 800);
+    const t2 = setTimeout(() => setBoxPhase("opened"), 1600);
+    const t3 = setTimeout(() => { setBoxPhase("done"); setShowContent(true); }, 2200);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+  }, []);
 
   return (
     <div ref={containerRef} className="relative bg-white text-[#102e4a]">
@@ -127,17 +255,15 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
         </motion.div>
       </motion.nav>
 
-      {/* ═══ Hero ═══ */}
+      {/* ═══ Hero — 상자 오프닝 시퀀스 ═══ */}
       <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-6">
-        {/* Animated gradient background */}
+        {/* 배경 */}
         <div
-          className="absolute inset-0 animate-[gradient-shift_8s_ease_infinite]"
+          className="absolute inset-0"
           style={{
             background: `conic-gradient(from 45deg at 50% 50%, ${C.periwinkle}20, ${C.cornflower}15, ${C.maya}20, ${C.periwinkle}20)`,
-            backgroundSize: "400% 400%",
           }}
         />
-        {/* Dot grid pattern */}
         <div
           className="absolute inset-0 opacity-[0.04]"
           style={{
@@ -146,82 +272,135 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
           }}
         />
 
-        <div className="relative z-10 mx-auto max-w-5xl text-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#715aff]/20 bg-[#715aff]/5 px-4 py-1.5 text-sm font-medium"
-            style={{ color: C.slate }}
-          >
-            <span className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
-            지금 {capsules.length}개 캡슐 오픈 가능
-          </motion.div>
+        {/* 빛 폭발 효과 */}
+        <AnimatePresence>
+          {boxPhase === "opening" && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 z-10"
+              style={{
+                background: `radial-gradient(circle at 50% 50%, ${C.maya}30, ${C.cornflower}15, transparent 60%)`,
+              }}
+            />
+          )}
+        </AnimatePresence>
 
-          <h1 className="text-[clamp(2.5rem,8vw,7rem)] font-bold leading-[0.95] tracking-tight">
-            <SplitText text="열어봐야 아는" />
-            <br />
-            <span
-              className="bg-clip-text text-transparent"
-              style={{ backgroundImage: `linear-gradient(135deg, ${C.slate}, ${C.cornflower}, ${C.maya})` }}
-            >
-              <SplitText text="짜릿한 순간" />
-            </span>
-          </h1>
+        {/* 컨페티 */}
+        {(boxPhase === "opening" || boxPhase === "opened") && (
+          <div className="absolute inset-0 z-20">
+            <Confetti count={80} />
+          </div>
+        )}
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 0.6 }}
-            className="mx-auto mt-8 max-w-xl text-lg text-[#102e4a]/50 md:text-xl"
-          >
-            랜덤 캡슐 안에 숨겨진 상품을 만나보세요.
-            아이패드부터 소소한 선물까지.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1, duration: 0.6 }}
-            className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
-          >
-            {/* Animated border CTA */}
-            <div className="group relative rounded-full p-[2px]">
-              <div
-                className="absolute inset-0 rounded-full opacity-75 blur-sm transition group-hover:opacity-100"
-                style={{ background: `linear-gradient(135deg, ${C.slate}, ${C.cornflower}, ${C.maya})` }}
-              />
-              <Link
-                href="/signup"
-                className="relative flex items-center gap-2 rounded-full px-8 py-4 text-lg font-bold text-white transition"
-                style={{ background: `linear-gradient(135deg, ${C.slate}, ${C.cornflower})` }}
+        <div className="relative z-30 mx-auto max-w-5xl text-center">
+          {/* 상자 (닫힘 → 열림 → 사라짐) */}
+          <AnimatePresence>
+            {boxPhase !== "done" && (
+              <motion.div
+                initial={{ scale: 0.6, opacity: 0, y: 30 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 1.3, opacity: 0, y: -40 }}
+                transition={{ duration: 0.6, ease: "easeOut" as const }}
               >
-                지금 시작하기
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="transition group-hover:translate-x-1">
-                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </Link>
-            </div>
-            <Link
-              href="/login"
-              className="rounded-full px-8 py-4 text-lg font-medium text-[#102e4a]/60 transition hover:text-[#715aff]"
-            >
-              이미 계정이 있나요?
-            </Link>
-          </motion.div>
+                <GiftBox phase={boxPhase} />
+                {boxPhase === "closed" && (
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: [0, 1, 0.6, 1] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                    className="mt-4 text-sm font-medium text-[#102e4a]/40"
+                  >
+                    상자를 여는 중...
+                  </motion.p>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* 메인 콘텐츠 (상자 사라진 후 등장) */}
+          {showContent && (
+            <>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+                className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#715aff]/20 bg-[#715aff]/5 px-4 py-1.5 text-sm font-medium"
+                style={{ color: C.slate }}
+              >
+                <span className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
+                지금 {capsules.length}개 캡슐 오픈 가능
+              </motion.div>
+
+              <h1 className="text-[clamp(2.5rem,8vw,7rem)] font-bold leading-[0.95] tracking-tight">
+                <SplitText text="열어봐야 아는" />
+                <br />
+                <span
+                  className="bg-clip-text text-transparent"
+                  style={{ backgroundImage: `linear-gradient(135deg, ${C.slate}, ${C.cornflower}, ${C.maya})` }}
+                >
+                  <SplitText text="짜릿한 순간" />
+                </span>
+              </h1>
+
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8, duration: 0.6 }}
+                className="mx-auto mt-8 max-w-xl text-lg text-[#102e4a]/50 md:text-xl"
+              >
+                랜덤 캡슐 안에 숨겨진 상품을 만나보세요.
+                아이패드부터 소소한 선물까지.
+              </motion.p>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1, duration: 0.6 }}
+                className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
+              >
+                <div className="group relative rounded-full p-[2px]">
+                  <div
+                    className="absolute inset-0 rounded-full opacity-75 blur-sm transition group-hover:opacity-100"
+                    style={{ background: `linear-gradient(135deg, ${C.slate}, ${C.cornflower}, ${C.maya})` }}
+                  />
+                  <Link
+                    href="/signup"
+                    className="relative flex items-center gap-2 rounded-full px-8 py-4 text-lg font-bold text-white transition"
+                    style={{ background: `linear-gradient(135deg, ${C.slate}, ${C.cornflower})` }}
+                  >
+                    지금 시작하기
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="transition group-hover:translate-x-1">
+                      <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </Link>
+                </div>
+                <Link
+                  href="/login"
+                  className="rounded-full px-8 py-4 text-lg font-medium text-[#102e4a]/60 transition hover:text-[#715aff]"
+                >
+                  이미 계정이 있나요?
+                </Link>
+              </motion.div>
+            </>
+          )}
         </div>
 
         {/* Scroll indicator */}
-        <motion.div
-          animate={{ y: [0, 12, 0] }}
-          transition={{ repeat: Infinity, duration: 2 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
-        >
-          <div className="flex flex-col items-center gap-2 text-[10px] font-medium uppercase tracking-widest text-[#102e4a]/30">
-            <span>scroll</span>
-            <div className="h-8 w-[1px] bg-[#102e4a]/20" />
-          </div>
-        </motion.div>
+        {showContent && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1, y: [0, 12, 0] }}
+            transition={{ opacity: { delay: 1.5 }, y: { repeat: Infinity, duration: 2 } }}
+            className="absolute bottom-8 left-1/2 -translate-x-1/2"
+          >
+            <div className="flex flex-col items-center gap-2 text-[10px] font-medium uppercase tracking-widest text-[#102e4a]/30">
+              <span>scroll</span>
+              <div className="h-8 w-[1px] bg-[#102e4a]/20" />
+            </div>
+          </motion.div>
+        )}
       </section>
 
       {/* ═══ 벤토 그리드 — 서비스 소개 ═══ */}
