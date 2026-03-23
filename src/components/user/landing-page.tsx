@@ -84,7 +84,7 @@ function TiltCard({ children, className }: { children: React.ReactNode; classNam
 /* ─── 단어별 리빌 텍스트 ─── */
 function SplitText({ text, className }: { text: string; className?: string }) {
   return (
-    <motion.span variants={staggerContainer} initial="hidden" animate="visible" className={className}>
+    <motion.span variants={staggerContainer} className={className}>
       {text.split(" ").map((word, i) => (
         <span key={i} className="inline-block overflow-hidden">
           <motion.span variants={wordReveal} className="inline-block">
@@ -397,19 +397,43 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
                 지금 {capsules.length}개 캡슐 오픈 가능
               </motion.div>
 
-              <motion.h1
-                variants={heroChild}
-                className="text-[clamp(2.5rem,8vw,7rem)] font-bold leading-[0.95] tracking-tight text-center"
-              >
-                <SplitText text="열어봐야 아는" />
-                <br />
-                <span
-                  className="bg-clip-text text-transparent"
-                  style={{ backgroundImage: `linear-gradient(135deg, ${C.slate}, ${C.cornflower}, ${C.maya})` }}
-                >
-                  <SplitText text="짜릿한 순간" />
-                </span>
-              </motion.h1>
+              <motion.div variants={heroChild}>
+                <h1 className="text-[clamp(2.5rem,8vw,7rem)] font-bold leading-[0.95] tracking-tight text-center">
+                  <motion.span
+                    variants={staggerContainer}
+                    initial="hidden"
+                    animate="visible"
+                  >
+                    {"열어봐야 아는".split(" ").map((word, i) => (
+                      <span key={i} className="inline-block overflow-hidden">
+                        <motion.span variants={wordReveal} className="inline-block">
+                          {word}&nbsp;
+                        </motion.span>
+                      </span>
+                    ))}
+                  </motion.span>
+                  <br />
+                  <span
+                    className="bg-clip-text text-transparent"
+                    style={{ backgroundImage: `linear-gradient(135deg, ${C.slate}, ${C.cornflower}, ${C.maya})` }}
+                  >
+                    <motion.span
+                      variants={staggerContainer}
+                      initial="hidden"
+                      animate="visible"
+                      transition={{ delayChildren: 0.3 }}
+                    >
+                      {"짜릿한 순간".split(" ").map((word, i) => (
+                        <span key={i} className="inline-block overflow-hidden">
+                          <motion.span variants={wordReveal} className="inline-block">
+                            {word}&nbsp;
+                          </motion.span>
+                        </span>
+                      ))}
+                    </motion.span>
+                  </span>
+                </h1>
+              </motion.div>
 
               <motion.p
                 variants={heroChild}
