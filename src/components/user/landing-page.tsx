@@ -271,20 +271,24 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
 
       {/* ═══ Hero — 상자 오프닝 시퀀스 ═══ */}
       <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-6">
-        {/* 배경 */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background: `conic-gradient(from 45deg at 50% 50%, ${C.periwinkle}20, ${C.cornflower}15, ${C.maya}20, ${C.periwinkle}20)`,
-          }}
-        />
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage: `radial-gradient(circle, ${C.deep} 1px, transparent 1px)`,
-            backgroundSize: "24px 24px",
-          }}
-        />
+        {/* 배경 이미지 */}
+        <div className="absolute inset-0">
+          <Image
+            src="/hero-bg.jpg"
+            alt=""
+            fill
+            priority
+            className="object-cover"
+          />
+          {/* 오버레이: 가독성 + 브랜드 톤 보정 */}
+          <div className="absolute inset-0 bg-black/30" />
+          <div
+            className="absolute inset-0 opacity-40"
+            style={{
+              background: `radial-gradient(ellipse at 50% 40%, ${C.cornflower}50, transparent 70%)`,
+            }}
+          />
+        </div>
 
         {/* 빛 폭발 효과 */}
         <AnimatePresence>
@@ -324,7 +328,7 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
                     initial={{ opacity: 0 }}
                     animate={{ opacity: [0, 1, 0.6, 1] }}
                     transition={{ duration: 1.5, repeat: Infinity }}
-                    className="mt-4 text-sm font-medium text-[#102e4a]/40"
+                    className="mt-4 text-sm font-medium text-white/40"
                   >
                     상자를 여는 중...
                   </motion.p>
@@ -340,14 +344,13 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: smooth }}
-                className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#715aff]/20 bg-[#715aff]/5 px-4 py-1.5 text-sm font-medium"
-                style={{ color: C.slate }}
+                className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm font-medium text-white/90 backdrop-blur-sm"
               >
                 <span className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
                 지금 {capsules.length}개 캡슐 오픈 가능
               </motion.div>
 
-              <h1 className="text-[clamp(2.5rem,8vw,7rem)] font-bold leading-[0.95] tracking-tight text-center">
+              <h1 className="text-[clamp(2.5rem,8vw,7rem)] font-bold leading-[0.95] tracking-tight text-center text-white">
                 {"열어봐야 아는".split("").map((char, i) => (
                   <motion.span
                     key={`a-${i}`}
@@ -362,7 +365,7 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
                 <br />
                 <span
                   className="bg-clip-text text-transparent"
-                  style={{ backgroundImage: `linear-gradient(135deg, ${C.slate}, ${C.cornflower}, ${C.maya})` }}
+                  style={{ backgroundImage: `linear-gradient(135deg, ${C.periwinkle}, ${C.cornflower}, ${C.maya})` }}
                 >
                   {"짜릿한 순간".split("").map((char, i) => (
                     <motion.span
@@ -382,7 +385,7 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.9, ease: smooth }}
-                className="mx-auto mt-8 max-w-xl text-lg text-[#102e4a]/50 md:text-xl"
+                className="mx-auto mt-8 max-w-xl text-lg text-white/60 md:text-xl"
               >
                 랜덤 캡슐 안에 숨겨진 상품을 만나보세요.
                 아이패드부터 소소한 선물까지.
@@ -412,7 +415,7 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
                 </div>
                 <Link
                   href="/login"
-                  className="rounded-full px-8 py-4 text-lg font-medium text-[#102e4a]/60 transition hover:text-[#715aff]"
+                  className="rounded-full px-8 py-4 text-lg font-medium text-white/50 transition hover:text-white"
                 >
                   이미 계정이 있나요?
                 </Link>
@@ -429,9 +432,9 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
             transition={{ opacity: { delay: 2, duration: 1 }, y: { repeat: Infinity, duration: 2.5, ease: smooth } }}
             className="absolute bottom-8 left-1/2 -translate-x-1/2"
           >
-            <div className="flex flex-col items-center gap-2 text-[10px] font-medium uppercase tracking-widest text-[#102e4a]/30">
+            <div className="flex flex-col items-center gap-2 text-[10px] font-medium uppercase tracking-widest text-white/30">
               <span>scroll</span>
-              <div className="h-8 w-[1px] bg-[#102e4a]/20" />
+              <div className="h-8 w-[1px] bg-white/20" />
             </div>
           </motion.div>
         )}
