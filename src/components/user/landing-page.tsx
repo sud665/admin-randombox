@@ -79,8 +79,8 @@ function Confetti({ count = 60 }: { count?: number }) {
       x: Math.random() * 100,
       color: [C.periwinkle, C.slate, C.cornflower, C.maya, "#fbbf24", "#f472b6"][Math.floor(Math.random() * 6)],
       size: Math.random() * 8 + 4,
-      delay: Math.random() * 0.5,
-      duration: Math.random() * 1.5 + 1.5,
+      delay: Math.random() * 0.8,
+      duration: Math.random() * 2 + 2,
       rotation: Math.random() * 360,
       shape: Math.random() > 0.5 ? "circle" : "rect",
     })),
@@ -122,8 +122,8 @@ function GiftBox({ phase }: { phase: "closed" | "opening" | "opened" }) {
         {(phase === "opening" || phase === "opened") && (
           <motion.div
             initial={{ opacity: 0, scale: 0.3 }}
-            animate={{ opacity: [0, 0.8, 0], scale: [0.3, 2.5, 3] }}
-            transition={{ duration: 1.5, ease: "easeOut" as const }}
+            animate={{ opacity: [0, 0.7, 0], scale: [0.3, 2.5, 3.5] }}
+            transition={{ duration: 2.2, ease: "easeOut" as const }}
             className="absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2"
             style={{
               width: 300,
@@ -157,7 +157,7 @@ function GiftBox({ phase }: { phase: "closed" | "opening" | "opened" }) {
             phase === "opened" ? { y: -80, opacity: 0 } :
             { y: 0, opacity: 1 }
           }
-          transition={{ duration: 0.8, ease: "easeOut" as const }}
+          transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
           style={{ originX: 0.5, originY: 1 }}
         >
           <rect x="12" y="70" width="156" height="30" rx="6" fill={C.cornflower} />
@@ -213,9 +213,9 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
   const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
-    const t1 = setTimeout(() => setBoxPhase("opening"), 800);
-    const t2 = setTimeout(() => setBoxPhase("opened"), 1600);
-    const t3 = setTimeout(() => { setBoxPhase("done"); setShowContent(true); }, 2200);
+    const t1 = setTimeout(() => setBoxPhase("opening"), 1200);
+    const t2 = setTimeout(() => setBoxPhase("opened"), 2400);
+    const t3 = setTimeout(() => { setBoxPhase("done"); setShowContent(true); }, 3200);
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, []);
 
@@ -301,8 +301,8 @@ export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurre
               <motion.div
                 initial={{ scale: 0.6, opacity: 0, y: 30 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
-                exit={{ scale: 1.3, opacity: 0, y: -40 }}
-                transition={{ duration: 0.6, ease: "easeOut" as const }}
+                exit={{ scale: 1.15, opacity: 0, y: -30 }}
+                transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
               >
                 <GiftBox phase={boxPhase} />
                 {boxPhase === "closed" && (
