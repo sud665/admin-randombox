@@ -1,6 +1,5 @@
 import { getCapsules, getFeverStatus, getProducts, getHallOfFameReviews, getUsers } from "@/lib/data-source";
-import { HomeContent } from "@/components/user/home-content";
-import { HomePageClient } from "@/components/user/home-page-client";
+import { LandingPage } from "@/components/user/landing-page";
 
 export const dynamic = 'force-dynamic';
 
@@ -26,14 +25,12 @@ export default async function HomePage() {
   });
 
   return (
-    <HomePageClient
+    <LandingPage
       capsules={capsules}
       feverPercentage={feverData?.progress?.percentage ?? 0}
       feverTarget={feverData?.config?.targetAmount ?? 5000000}
       feverCurrent={feverData?.progress?.currentAmount ?? 0}
       reviews={hallOfFameReviews}
-    >
-      <HomeContent />
-    </HomePageClient>
+    />
   );
 }

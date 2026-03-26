@@ -1,187 +1,22 @@
 "use client";
 
-import { useRef, useState, useEffect, useMemo } from "react";
-import { motion, useScroll, useTransform, useMotionValue, useSpring, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, useInView } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import type { Capsule } from "@/types";
-import { Logo } from "@/components/ui/logo";
-
-/* ─── 팔레트 ─── */
-const C = {
-  periwinkle: "#a682ff",
-  slate: "#715aff",
-  cornflower: "#5887ff",
-  maya: "#55c1ff",
-  deep: "#102e4a",
-} as const;
-
-/* ─── 애니메이션 헬퍼 ─── */
-const smooth = [0.25, 0.1, 0.25, 1] as const;       // cubic-bezier — CSS ease 동등
-const decel = [0.0, 0.0, 0.2, 1] as const;           // material decelerate
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: smooth } },
-};
-
-/* ─── 3D 틸트 카드 ─── */
-function TiltCard({ children, className }: { children: React.ReactNode; className?: string }) {
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [8, -8]), { stiffness: 300, damping: 30 });
-  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-8, 8]), { stiffness: 300, damping: 30 });
-
-  function handleMouse(e: React.MouseEvent<HTMLDivElement>) {
-    const rect = e.currentTarget.getBoundingClientRect();
-    x.set((e.clientX - rect.left) / rect.width - 0.5);
-    y.set((e.clientY - rect.top) / rect.height - 0.5);
-  }
-
-  return (
-    <motion.div
-      onMouseMove={handleMouse}
-      onMouseLeave={() => { x.set(0); y.set(0); }}
-      style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
-}
-
-/* ─── 컨페티 파티클 ─── */
-function Confetti({ count = 60 }: { count?: number }) {
-  const particles = useMemo(() =>
-    Array.from({ length: count }, (_, i) => ({
-      id: i,
-      x: Math.random() * 100,
-      color: [C.periwinkle, C.slate, C.cornflower, C.maya, "#fbbf24", "#f472b6"][Math.floor(Math.random() * 6)],
-      size: Math.random() * 8 + 4,
-      delay: Math.random() * 0.8,
-      duration: Math.random() * 2 + 2,
-      rotation: Math.random() * 360,
-      shape: Math.random() > 0.5 ? "circle" : "rect",
-    })),
-  [count]);
-
-  return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {particles.map((p) => (
-        <motion.div
-          key={p.id}
-          initial={{ y: "40vh", x: `${p.x}vw`, opacity: 1, scale: 0, rotate: 0 }}
-          animate={{
-            y: [null, `${-20 - Math.random() * 80}vh`],
-            x: [null, `${p.x + (Math.random() - 0.5) * 30}vw`],
-            opacity: [1, 1, 0],
-            scale: [0, 1.2, 0.8],
-            rotate: [0, p.rotation + 360],
-          }}
-          transition={{ duration: p.duration, delay: p.delay, ease: "easeOut" as const }}
-          className="absolute"
-          style={{
-            width: p.size,
-            height: p.shape === "rect" ? p.size * 1.5 : p.size,
-            backgroundColor: p.color,
-            borderRadius: p.shape === "circle" ? "50%" : "2px",
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
-/* ─── 선물상자 SVG ─── */
-function GiftBox({ phase }: { phase: "closed" | "opening" | "opened" }) {
-  return (
-    <div className="relative mx-auto" style={{ width: 180, height: 200 }}>
-      {/* 빛 효과 (열릴 때) */}
-      <AnimatePresence>
-        {(phase === "opening" || phase === "opened") && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.3 }}
-            animate={{ opacity: [0, 0.7, 0], scale: [0.3, 2.5, 3.5] }}
-            transition={{ duration: 2.2, ease: "easeOut" as const }}
-            className="absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2"
-            style={{
-              width: 300,
-              height: 300,
-              borderRadius: "50%",
-              background: `radial-gradient(circle, ${C.maya}60, ${C.cornflower}30, transparent 70%)`,
-            }}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* 상자 본체 */}
-      <motion.svg
-        viewBox="0 0 180 200"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        className="relative z-10"
-      >
-        {/* 상자 본체 */}
-        <motion.rect x="20" y="90" width="140" height="100" rx="8" fill={C.slate} />
-        <motion.rect x="20" y="90" width="140" height="100" rx="8" fill="url(#boxGrad)" />
-        {/* 세로 리본 */}
-        <rect x="80" y="90" width="20" height="100" fill={C.maya} opacity="0.6" />
-        {/* 가로 리본 */}
-        <rect x="20" y="125" width="140" height="20" fill={C.maya} opacity="0.6" />
-
-        {/* 뚜껑 */}
-        <motion.g
-          animate={
-            phase === "opening" ? { y: -60, rotateX: -50, opacity: 0 } :
-            phase === "opened" ? { y: -80, opacity: 0 } :
-            { y: 0, opacity: 1 }
-          }
-          transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-          style={{ originX: 0.5, originY: 1 }}
-        >
-          <rect x="12" y="70" width="156" height="30" rx="6" fill={C.cornflower} />
-          <rect x="80" y="70" width="20" height="30" fill={C.maya} opacity="0.6" />
-          {/* 리본 매듭 */}
-          <ellipse cx="75" cy="65" rx="16" ry="20" transform="rotate(-15 75 65)" fill={C.cornflower} />
-          <ellipse cx="105" cy="65" rx="16" ry="20" transform="rotate(15 105 65)" fill={C.cornflower} />
-          <circle cx="90" cy="70" r="10" fill={C.maya} />
-        </motion.g>
-
-        {/* 반짝임 */}
-        <motion.g
-          animate={{ opacity: [0.4, 1, 0.4] }}
-          transition={{ repeat: Infinity, duration: 2 }}
-        >
-          <path d="M155 80l3 5 5 3-5 3-3 5-3-5-5-3 5-3z" fill="white" opacity="0.8" />
-          <path d="M35 100l2 3 3 2-3 2-2 3-2-3-3-2 3-2z" fill="white" opacity="0.6" />
-        </motion.g>
-
-        <defs>
-          <linearGradient id="boxGrad" x1="20" y1="90" x2="160" y2="190" gradientUnits="userSpaceOnUse">
-            <stop stopColor={C.slate} />
-            <stop offset="1" stopColor={C.periwinkle} />
-          </linearGradient>
-        </defs>
-      </motion.svg>
-    </div>
-  );
-}
-
-/* ─── 랜딩용 기본 리뷰 데이터 ─── */
-const LANDING_REVIEWS = [
-  { content: "3,000원 캡슐에서 에어팟 프로 나왔습니다… 손이 떨렸어요 진짜로. 친구한테 자랑했더니 아무도 안 믿어줌 ㅋㅋ", rating: 5, productName: "에어팟 프로 2", nickname: "럭키보이" },
-  { content: "반신반의하면서 라이트 캡슐 열었는데 스타벅스 텀블러 당첨! 가격 대비 이 정도면 완전 이득이죠. 매주 하나씩 열어보는 재미가 있어요.", rating: 5, productName: "스타벅스 텀블러", nickname: "커피중독자" },
-  { content: "D급이라 별 기대 안 했는데 귀여운 키링이랑 스티커 세트 왔어요. 포장도 깔끔하고 소소하게 기분 좋아지는 느낌!", rating: 4, productName: "캐릭터 키링 세트", nickname: "모닝글로리" },
-  { content: "프리미엄 캡슐 질렀는데 아이패드 미니 당첨됐습니다. 실화인가 싶어서 세 번 확인함. 배송도 이틀 만에 와서 놀랐어요.", rating: 5, productName: "아이패드 미니", nickname: "갓생러" },
-  { content: "솔직히 처음엔 뽑기라 좀 찝찝했는데, 분해 기능으로 포인트 전환되니까 손해 보는 느낌 없어요. B급 나왔는데 블루투스 스피커라 꽤 만족!", rating: 4, productName: "JBL 블루투스 스피커", nickname: "음악덕후" },
-  { content: "피버 이벤트 때 닌텐도 스위치 당첨된 사람입니다. 커뮤니티 게이지 같이 채우는 거 은근 중독성 있어요. 다음 피버도 기대 중!", rating: 5, productName: "닌텐도 스위치", nickname: "겜돌이" },
-  { content: "5,000원짜리 캡슐 3개 열었는데 다이슨 에어랩 나옴 ㄷㄷ 역대급 운이었던 것 같아요. 여자친구 선물로 줬더니 대반응!", rating: 5, productName: "다이슨 에어랩", nickname: "선물장인" },
-  { content: "매번 C~D급 나오다가 드디어 S급 떴어요!! 갤럭시 버즈 당첨. 꾸준히 하면 진짜 나오긴 하는구나 싶었습니다.", rating: 5, productName: "갤럭시 버즈 3 프로", nickname: "끈기의달인" },
-  { content: "가벼운 마음으로 라이트 캡슐 열었다가 올리브영 기프트카드 5만원권 당첨. 쏠쏠하네요~ 다음 달에도 도전할 예정!", rating: 4, productName: "올리브영 기프트카드", nickname: "뷰티러버" },
-  { content: "회사 점심시간에 심심해서 열어봤는데 애플워치 SE 나왔어요. 팀원들이 다 몰려와서 구경함 ㅋㅋ 회사에서 제일 유명해졌습니다.", rating: 5, productName: "애플워치 SE", nickname: "직장인J" },
-  { content: "처음이라 제일 싼 캡슐로 시작했어요. 귀여운 양말 세트 나왔는데 퀄리티가 생각보다 좋아서 오히려 만족! D급도 괜찮네요.", rating: 4, productName: "디자인 양말 세트", nickname: "양말수집가" },
-  { content: "분해해서 모은 포인트로 프리미엄 캡슐 도전했더니 B급 무선 충전기 당첨. 전략적으로 하면 더 재밌어요.", rating: 4, productName: "삼성 무선 충전기", nickname: "전략가K" },
-];
+import {
+  Gift,
+  PackageOpen,
+  RefreshCw,
+  Crown,
+  Sparkles,
+  Heart,
+  ArrowRight,
+  Menu,
+  X,
+} from "lucide-react";
+import { useRef } from "react";
 
 /* ─── Props ─── */
 interface LandingPageProps {
@@ -189,563 +24,560 @@ interface LandingPageProps {
   feverPercentage: number;
   feverTarget: number;
   feverCurrent: number;
-  reviews: { content: string; rating: number; productName: string; nickname: string }[];
+  reviews: {
+    content: string;
+    rating: number;
+    productName: string;
+    nickname: string;
+  }[];
 }
 
-/* ═══════════════════════════════════════════════════ */
-export function LandingPage({ capsules, feverPercentage, feverTarget, feverCurrent, reviews }: LandingPageProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll();
-  const horizontalRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress: capsuleScroll } = useScroll({
-    target: horizontalRef,
-    offset: ["start end", "end start"],
-  });
-  const capsuleX = useTransform(capsuleScroll, [0.15, 0.85], ["10%", "-55%"]);
+/* ─── 색상 팔레트 ─── */
+const PINK = "#F04EA3";
+const PINK_LIGHT = "#FFB3C6";
+const CYAN = "#90E0EF";
+const SLATE = "#4A5568";
+const GRAY = "#7A7A7A";
+const BG_LIGHT = "#F8F9FA";
 
-  /* 캡슐 목록을 3배로 반복 → 스크롤 의미 부여 */
-  const repeatedCapsules = useMemo(() => {
-    if (capsules.length === 0) return [];
-    const result = [];
-    for (let r = 0; r < 3; r++) {
-      for (const c of capsules) {
-        result.push({ ...c, _key: `${c.id}-${r}` });
-      }
-    }
-    return result;
-  }, [capsules]);
+/* ─── 애니메이션 헬퍼 ─── */
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] as const },
+  },
+};
 
-  /* DB 리뷰 + 랜딩 기본 리뷰 병합 (중복 닉네임 제거, 최대 12개) */
-  const allReviews = useMemo(() => {
-    const seen = new Set(reviews.map((r) => r.nickname));
-    const extra = LANDING_REVIEWS.filter((r) => !seen.has(r.nickname));
-    return [...reviews, ...extra].slice(0, 12);
-  }, [reviews]);
+const staggerContainer = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.12 } },
+};
 
-  /* ─── 상자 오프닝 시퀀스 ─── */
-  const [boxPhase, setBoxPhase] = useState<"closed" | "opening" | "opened" | "done">("closed");
-  const [showContent, setShowContent] = useState(false);
+/* ─── 캡슐 카드 아이콘 매핑 ─── */
+const capsuleIcons = [Crown, Gift, Sparkles, Heart];
+function getCapsuleIcon(index: number) {
+  return capsuleIcons[index % capsuleIcons.length];
+}
+
+/* ─── 스크롤 애니메이션 래퍼 ─── */
+function AnimatedSection({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial="hidden"
+      animate={inView ? "visible" : "hidden"}
+      variants={staggerContainer}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+/* ─── 메인 컴포넌트 ─── */
+export function LandingPage({
+  capsules,
+  feverPercentage,
+  feverTarget,
+  feverCurrent,
+  reviews,
+}: LandingPageProps) {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    const t1 = setTimeout(() => setBoxPhase("opening"), 1200);
-    const t2 = setTimeout(() => setBoxPhase("opened"), 2400);
-    const t3 = setTimeout(() => { setBoxPhase("done"); setShowContent(true); }, 3200);
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
-    <div ref={containerRef} className="relative bg-white text-[#102e4a]">
+    <div className="min-h-screen font-[Inter,sans-serif] bg-white text-[#4A4A4A]">
+      {/* ─── Float 키프레임 CSS ─── */}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+            @keyframes float {
+              0%, 100% { transform: translateY(0); }
+              50% { transform: translateY(-10px); }
+            }
+            .animate-float { animation: float 3s ease-in-out infinite; }
+            .animate-float-delayed { animation: float 3s ease-in-out infinite; animation-delay: 1.5s; }
+            ::-webkit-scrollbar { width: 8px; }
+            ::-webkit-scrollbar-track { background: #f1f1f1; }
+            ::-webkit-scrollbar-thumb { background: #F04EA3; border-radius: 10px; }
+            ::-webkit-scrollbar-thumb:hover { background: #D03E83; }
+          `,
+        }}
+      />
 
-      {/* ═══ Floating Nav ═══ */}
-      <motion.nav
-        initial={{ y: -40, opacity: 0, filter: "blur(8px)" }}
-        animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-        transition={{ delay: 1.2, duration: 1, ease: smooth }}
-        className="fixed top-4 left-1/2 z-50 -translate-x-1/2"
+      {/* ═══════════════ Header ═══════════════ */}
+      <header
+        className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+          isScrolled
+            ? "bg-white/90 backdrop-blur-md border-b border-gray-100 py-3"
+            : "bg-transparent py-5"
+        }`}
       >
-        <div className="flex items-center gap-6 rounded-full border border-white/20 bg-white/70 px-6 py-2.5 shadow-lg backdrop-blur-xl">
-          <Logo size="sm" />
-          <div className="hidden items-center gap-5 text-xs font-medium text-[#102e4a]/60 sm:flex">
-            <a href="#how" className="transition hover:text-[#715aff]">이용방법</a>
-            <a href="#capsules" className="transition hover:text-[#715aff]">캡슐</a>
-            <a href="#fever" className="transition hover:text-[#715aff]">피버</a>
-            <a href="#reviews" className="transition hover:text-[#715aff]">후기</a>
-          </div>
-          <Link
-            href="/signup"
-            className="rounded-full px-4 py-1.5 text-xs font-bold text-white transition hover:opacity-90"
-            style={{ background: `linear-gradient(135deg, ${C.slate}, ${C.cornflower})` }}
-          >
-            시작하기
-          </Link>
-        </div>
-        {/* Scroll Progress */}
-        <motion.div
-          style={{ scaleX: scrollYProgress, transformOrigin: "left" }}
-          className="mt-1 mx-auto h-0.5 w-full max-w-[200px] rounded-full"
-          layoutScroll
-        >
-          <div className="h-full w-full rounded-full" style={{ background: `linear-gradient(90deg, ${C.slate}, ${C.maya})` }} />
-        </motion.div>
-      </motion.nav>
-
-      {/* ═══ Hero — 상자 오프닝 시퀀스 ═══ */}
-      <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-6">
-        {/* 배경 이미지 */}
-        <div className="absolute inset-0">
-          <Image
-            src="/hero-bg.jpg"
-            alt=""
-            fill
-            priority
-            className="object-cover"
-          />
-          {/* 오버레이: 가독성 + 브랜드 톤 보정 */}
-          <div className="absolute inset-0 bg-black/30" />
-          <div
-            className="absolute inset-0 opacity-40"
-            style={{
-              background: `radial-gradient(ellipse at 50% 40%, ${C.cornflower}50, transparent 70%)`,
-            }}
-          />
-        </div>
-
-        {/* 빛 폭발 효과 */}
-        <AnimatePresence>
-          {boxPhase === "opening" && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 z-10"
-              style={{
-                background: `radial-gradient(circle at 50% 50%, ${C.maya}30, ${C.cornflower}15, transparent 60%)`,
-              }}
-            />
-          )}
-        </AnimatePresence>
-
-        {/* 컨페티 */}
-        {(boxPhase === "opening" || boxPhase === "opened") && (
-          <div className="absolute inset-0 z-20">
-            <Confetti count={80} />
-          </div>
-        )}
-
-        <div className="relative z-30 mx-auto max-w-5xl text-center">
-          {/* 상자 (닫힘 → 열림 → 사라짐) */}
-          <AnimatePresence>
-            {boxPhase !== "done" && (
-              <motion.div
-                initial={{ scale: 0.6, opacity: 0, y: 30 }}
-                animate={{ scale: 1, opacity: 1, y: 0 }}
-                exit={{ scale: 1.15, opacity: 0, y: -30 }}
-                transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <GiftBox phase={boxPhase} />
-                {boxPhase === "closed" && (
-                  <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: [0, 1, 0.6, 1] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                    className="mt-4 text-sm font-medium text-white/40"
-                  >
-                    상자를 여는 중...
-                  </motion.p>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* 메인 콘텐츠 (상자 사라진 후 등장) */}
-          {showContent && (
-            <div className="flex flex-col items-center">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: smooth }}
-                className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm font-medium text-white/90 backdrop-blur-sm"
-              >
-                <span className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
-                지금 {capsules.length}개 캡슐 오픈 가능
-              </motion.div>
-
-              <h1 className="text-[clamp(2.5rem,8vw,7rem)] font-bold leading-[0.95] tracking-tight text-center text-white">
-                {"열어봐야 아는".split("").map((char, i) => (
-                  <motion.span
-                    key={`a-${i}`}
-                    initial={{ opacity: 0, y: 40 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.2 + i * 0.04, ease: decel }}
-                    className="inline-block"
-                  >
-                    {char === " " ? "\u00A0" : char}
-                  </motion.span>
-                ))}
-                <br />
-                <span
-                  className="bg-clip-text text-transparent"
-                  style={{ backgroundImage: `linear-gradient(135deg, ${C.periwinkle}, ${C.cornflower}, ${C.maya})` }}
-                >
-                  {"짜릿한 순간".split("").map((char, i) => (
-                    <motion.span
-                      key={`b-${i}`}
-                      initial={{ opacity: 0, y: 40 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: 0.5 + i * 0.04, ease: decel }}
-                      className="inline-block"
-                    >
-                      {char === " " ? "\u00A0" : char}
-                    </motion.span>
-                  ))}
-                </span>
-              </h1>
-
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.9, ease: smooth }}
-                className="mx-auto mt-8 max-w-xl text-lg text-white/60 md:text-xl"
-              >
-                랜덤 캡슐 안에 숨겨진 상품을 만나보세요.
-                아이패드부터 소소한 선물까지.
-              </motion.p>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 1.1, ease: smooth }}
-                className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
-              >
-                <div className="group relative rounded-full p-[2px]">
-                  <div
-                    className="absolute inset-0 rounded-full opacity-75 blur-sm transition group-hover:opacity-100"
-                    style={{ background: `linear-gradient(135deg, ${C.slate}, ${C.cornflower}, ${C.maya})` }}
-                  />
-                  <Link
-                    href="/signup"
-                    className="relative flex items-center gap-2 rounded-full px-8 py-4 text-lg font-bold text-white transition"
-                    style={{ background: `linear-gradient(135deg, ${C.slate}, ${C.cornflower})` }}
-                  >
-                    지금 시작하기
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="transition group-hover:translate-x-1">
-                      <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </Link>
-                </div>
-                <Link
-                  href="/login"
-                  className="rounded-full px-8 py-4 text-lg font-medium text-white/50 transition hover:text-white"
-                >
-                  이미 계정이 있나요?
-                </Link>
-              </motion.div>
-            </div>
-          )}
-        </div>
-
-        {/* Scroll indicator */}
-        {showContent && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1, y: [0, 12, 0] }}
-            transition={{ opacity: { delay: 2, duration: 1 }, y: { repeat: Infinity, duration: 2.5, ease: smooth } }}
-            className="absolute bottom-8 left-1/2 -translate-x-1/2"
-          >
-            <div className="flex flex-col items-center gap-2 text-[10px] font-medium uppercase tracking-widest text-white/30">
-              <span>scroll</span>
-              <div className="h-8 w-[1px] bg-white/20" />
-            </div>
-          </motion.div>
-        )}
-      </section>
-
-      {/* ═══ 벤토 그리드 — 서비스 소개 ═══ */}
-      <section id="how" className="px-6 py-24 md:py-32">
-        <div className="mx-auto max-w-5xl">
-          <motion.p
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="text-center text-sm font-semibold uppercase tracking-widest"
-            style={{ color: C.slate }}
-          >
-            How it works
-          </motion.p>
-          <motion.h2
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="mt-3 text-center text-3xl font-bold md:text-5xl"
-          >
-            3단계로 즐기는 랜덤박스
-          </motion.h2>
-
-          {/* Bento Grid */}
-          <div className="mt-16 grid grid-cols-1 gap-4 md:grid-cols-6 md:grid-rows-2">
-            {/* Card 1 — 큰 카드 */}
-            <motion.div
-              variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
-              className="group relative overflow-hidden rounded-3xl border border-[#715aff]/10 bg-gradient-to-br from-[#715aff]/5 to-transparent p-8 md:col-span-3 md:row-span-2"
-            >
-              <span className="text-6xl font-black text-[#715aff]/10">01</span>
-              <div className="mt-4">
-                <span className="text-4xl">🎰</span>
-                <h3 className="mt-3 text-2xl font-bold">캡슐 구매</h3>
-                <p className="mt-2 max-w-sm leading-relaxed text-[#102e4a]/50">
-                  프리미엄부터 라이트까지, 원하는 가격대의 캡슐을 선택하세요.
-                  각 캡슐마다 S급~D급 상품이 다양한 확률로 들어있습니다.
-                </p>
-              </div>
-              <div
-                className="absolute -bottom-4 -right-4 h-40 w-40 rounded-full opacity-20 blur-3xl transition group-hover:opacity-40"
-                style={{ background: C.slate }}
-              />
-            </motion.div>
-
-            {/* Card 2 */}
-            <motion.div
-              variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="group relative overflow-hidden rounded-3xl border border-[#5887ff]/10 bg-gradient-to-br from-[#5887ff]/5 to-transparent p-8 md:col-span-3"
-            >
-              <div className="flex items-start justify-between">
-                <div>
-                  <span className="text-4xl">🎁</span>
-                  <h3 className="mt-3 text-xl font-bold">캡슐 오픈</h3>
-                  <p className="mt-2 leading-relaxed text-[#102e4a]/50">
-                    두근거리는 순간! S급부터 D급까지 랜덤 상품이 등장합니다.
-                  </p>
-                </div>
-                <span className="text-5xl font-black text-[#5887ff]/10">02</span>
-              </div>
-            </motion.div>
-
-            {/* Card 3 */}
-            <motion.div
-              variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="group relative overflow-hidden rounded-3xl border border-[#55c1ff]/10 bg-gradient-to-br from-[#55c1ff]/5 to-transparent p-8 md:col-span-3"
-            >
-              <div className="flex items-start justify-between">
-                <div>
-                  <span className="text-4xl">📦</span>
-                  <h3 className="mt-3 text-xl font-bold">수령 또는 분해</h3>
-                  <p className="mt-2 leading-relaxed text-[#102e4a]/50">
-                    마음에 드는 상품은 배송, 아쉬운 상품은 포인트로 전환하세요.
-                  </p>
-                </div>
-                <span className="text-5xl font-black text-[#55c1ff]/10">03</span>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ 가로 스크롤 캡슐 쇼케이스 ═══ */}
-      <section id="capsules" ref={horizontalRef} className="overflow-hidden py-24 md:py-32">
-        <div className="mx-auto max-w-5xl px-6">
-          <motion.p
-            variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
-            className="text-sm font-semibold uppercase tracking-widest"
-            style={{ color: C.slate }}
-          >
-            Capsules
-          </motion.p>
-          <motion.h2
-            variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
-            className="mt-3 text-3xl font-bold md:text-5xl"
-          >
-            지금 도전할 수 있는 캡슐
-          </motion.h2>
-        </div>
-        <motion.div style={{ x: capsuleX }} className="mt-12 flex gap-6 px-6">
-          {repeatedCapsules.map((capsule) => (
-            <TiltCard
-              key={capsule._key}
-              className="w-[320px] flex-shrink-0 cursor-pointer overflow-hidden rounded-3xl border border-[#a682ff]/15 bg-white shadow-sm"
-            >
-              <div className="relative aspect-[4/3] overflow-hidden">
-                {capsule.imageUrl ? (
-                  <Image
-                    src={capsule.imageUrl}
-                    alt={capsule.name}
-                    fill
-                    className="object-cover transition duration-700 hover:scale-105"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-[#f8f6ff] text-5xl">🎲</div>
-                )}
-              </div>
-              <div className="p-5">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-bold">{capsule.name}</h3>
-                  <span
-                    className="rounded-full px-3 py-1 text-xs font-bold text-white"
-                    style={{ background: `linear-gradient(135deg, ${C.slate}, ${C.cornflower})` }}
-                  >
-                    ₩{capsule.price.toLocaleString()}
-                  </span>
-                </div>
-                <p className="mt-2 text-sm leading-relaxed text-[#102e4a]/50">{capsule.description}</p>
-              </div>
-            </TiltCard>
-          ))}
-        </motion.div>
-      </section>
-
-      {/* ═══ 피버 게이지 ═══ */}
-      <section id="fever" className="relative overflow-hidden px-6 py-24 md:py-32">
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `radial-gradient(circle, ${C.slate} 1px, transparent 1px)`,
-            backgroundSize: "20px 20px",
-          }}
-        />
-        <div className="relative mx-auto max-w-4xl">
-          <div className="mb-12 text-center">
-            <motion.p
-              variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
-              className="text-sm font-semibold uppercase tracking-widest"
-              style={{ color: C.slate }}
-            >
-              Community Fever
-            </motion.p>
-            <motion.h2
-              variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
-              className="mt-3 text-3xl font-bold md:text-5xl"
-            >
-              함께 채우는{" "}
-              <span
-                className="bg-clip-text text-transparent"
-                style={{ backgroundImage: `linear-gradient(135deg, ${C.slate}, ${C.maya})` }}
-              >
-                피버 게이지
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center">
+            {/* Logo */}
+            <Link href="/" className="flex-shrink-0 flex items-center">
+              <span className="font-extrabold text-2xl tracking-tighter">
+                RANDOM<span style={{ color: PINK }}>BOX</span>
               </span>
-            </motion.h2>
-            <motion.p
-              variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
-              className="mx-auto mt-4 max-w-lg leading-relaxed text-[#102e4a]/50"
-            >
-              모든 구매가 모여 피버 게이지를 채웁니다. 목표 금액에 도달하면 특별한 보상이 추첨됩니다!
-            </motion.p>
-          </div>
-          <motion.div
-            variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
-            className="mx-auto max-w-xl rounded-3xl border border-[#715aff]/10 bg-gradient-to-br from-[#715aff]/5 to-[#55c1ff]/5 p-8"
-          >
-            <div className="text-center">
-              <motion.span
-                initial={{ opacity: 0, scale: 0.5 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ type: "spring", stiffness: 200, delay: 0.3 }}
-                className="text-5xl font-black"
-                style={{ color: C.slate }}
+            </Link>
+
+            {/* Desktop Nav */}
+            <nav className="hidden md:flex space-x-10">
+              <a
+                href="#how"
+                className="text-[15px] font-bold text-[#7A7A7A] hover:text-[#F04EA3] transition-colors"
               >
-                {feverPercentage}%
-              </motion.span>
-              <p className="mt-1 text-sm text-[#102e4a]/40">달성률</p>
+                이용방법
+              </a>
+              <a
+                href="#capsules"
+                className="text-[15px] font-bold text-[#7A7A7A] hover:text-[#F04EA3] transition-colors"
+              >
+                박스목록
+              </a>
+              <a
+                href="#fever"
+                className="text-[15px] font-bold text-[#7A7A7A] hover:text-[#F04EA3] transition-colors"
+              >
+                피버
+              </a>
+              <a
+                href="#reviews"
+                className="text-[15px] font-bold text-[#7A7A7A] hover:text-[#F04EA3] transition-colors"
+              >
+                후기
+              </a>
+            </nav>
+
+            {/* Desktop Auth */}
+            <div className="hidden md:flex items-center space-x-6">
+              <Link
+                href="/login"
+                className="text-[15px] font-bold text-[#7A7A7A]"
+              >
+                로그인
+              </Link>
+              <Link
+                href="/signup"
+                className="text-[15px] font-bold bg-[#F04EA3] text-white px-6 py-2.5 rounded-full shadow-sm"
+              >
+                시작하기
+              </Link>
             </div>
-            <div className="mt-6 h-3 overflow-hidden rounded-full bg-[#102e4a]/5">
-              <motion.div
-                initial={{ width: 0 }}
-                whileInView={{ width: `${feverPercentage}%` }}
-                viewport={{ once: true }}
-                transition={{ duration: 1.5, ease: "easeOut" as const, delay: 0.5 }}
-                className="h-full rounded-full"
-                style={{ background: `linear-gradient(90deg, ${C.slate}, ${C.cornflower}, ${C.maya})` }}
-              />
+
+            {/* Mobile Menu Toggle */}
+            <div className="md:hidden">
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="text-[#7A7A7A]"
+              >
+                {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+              </button>
             </div>
-            <div className="mt-3 flex justify-between text-xs text-[#102e4a]/40">
-              <span>₩{feverCurrent.toLocaleString()}</span>
-              <span>₩{feverTarget.toLocaleString()}</span>
+          </div>
+        </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="md:hidden bg-white/95 backdrop-blur-md border-t border-gray-100 px-4 py-4 space-y-3"
+          >
+            <a
+              href="#how"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-[15px] font-bold text-[#7A7A7A] hover:text-[#F04EA3]"
+            >
+              이용방법
+            </a>
+            <a
+              href="#capsules"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-[15px] font-bold text-[#7A7A7A] hover:text-[#F04EA3]"
+            >
+              박스목록
+            </a>
+            <a
+              href="#fever"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-[15px] font-bold text-[#7A7A7A] hover:text-[#F04EA3]"
+            >
+              피버
+            </a>
+            <a
+              href="#reviews"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-[15px] font-bold text-[#7A7A7A] hover:text-[#F04EA3]"
+            >
+              후기
+            </a>
+            <div className="pt-3 border-t border-gray-100 space-y-2">
+              <Link
+                href="/login"
+                className="block text-[15px] font-bold text-[#7A7A7A]"
+              >
+                로그인
+              </Link>
+              <Link
+                href="/signup"
+                className="block text-[15px] font-bold bg-[#F04EA3] text-white px-6 py-2.5 rounded-full shadow-sm text-center"
+              >
+                시작하기
+              </Link>
             </div>
           </motion.div>
+        )}
+      </header>
+
+      {/* ═══════════════ Hero Section ═══════════════ */}
+      <section className="relative h-[70dvh] min-h-[500px] w-full overflow-hidden bg-white">
+        {/* Spline 3D Background */}
+        <div className="absolute inset-0 z-0">
+          <iframe
+            src="https://my.spline.design/interactivecubes-W9UkIQwhtgibR7TOuQEhfqgS/"
+            frameBorder="0"
+            width="100%"
+            height="100%"
+            title="3D Background"
+          />
         </div>
-      </section>
+        <div className="absolute inset-0 z-10 bg-white/30 pointer-events-none" />
 
-      {/* ═══ 명예의 전당 ═══ */}
-      <section id="reviews" className="bg-[#fafafe] px-6 py-24 md:py-32">
-        <div className="mx-auto max-w-5xl">
-          <motion.p
-            variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
-            className="text-center text-sm font-semibold uppercase tracking-widest"
-            style={{ color: C.slate }}
-          >
-            Reviews
-          </motion.p>
-          <motion.h2
-            variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
-            className="mt-3 text-center text-3xl font-bold md:text-5xl"
-          >
-            실제 당첨 후기
-          </motion.h2>
-
-          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {allReviews.map((review, i) => (
-              <TiltCard
-                key={i}
-                className="rounded-3xl border border-white bg-white/80 p-6 shadow-sm backdrop-blur"
+        <div className="absolute inset-0 z-20 flex flex-col justify-center pointer-events-none">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+              className="text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tighter leading-[1.05] mb-6"
+            >
+              두근두근 랜덤박스
+              <br />
+              <span style={{ color: PINK }}>RANDOM BOX</span>
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.8,
+                delay: 0.2,
+                ease: [0.25, 0.1, 0.25, 1],
+              }}
+              className="text-lg md:text-2xl font-bold text-gray-600 mb-8 max-w-2xl"
+            >
+              무엇이 나올지 모르는 설렘.
+              <br />
+              당신의 일상에 작은 기적을 선물하세요.
+            </motion.p>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.8,
+                delay: 0.4,
+                ease: [0.25, 0.1, 0.25, 1],
+              }}
+              className="pointer-events-auto"
+            >
+              <a
+                href="#capsules"
+                className="inline-flex items-center px-8 py-3.5 text-base font-bold rounded-full text-white bg-[#4A5568] shadow-xl hover:bg-[#2D3748] transition-colors"
               >
-                <div className="flex items-center gap-1" style={{ color: C.periwinkle }}>
-                  {Array.from({ length: review.rating }, (_, j) => (
-                    <span key={j}>★</span>
-                  ))}
-                </div>
-                <p className="mt-4 leading-relaxed text-[#102e4a]/70">{review.content}</p>
-                <div className="mt-5 flex items-center justify-between border-t border-[#102e4a]/5 pt-4 text-sm">
-                  <span className="font-medium text-[#102e4a]/60">{review.nickname}</span>
-                  <span
-                    className="rounded-full px-3 py-1 text-xs font-medium"
-                    style={{ background: `${C.slate}10`, color: C.slate }}
-                  >
-                    {review.productName}
-                  </span>
-                </div>
-              </TiltCard>
-            ))}
+                박스 열어보기 <ArrowRight size={20} className="ml-2" />
+              </a>
+            </motion.div>
           </div>
         </div>
       </section>
 
-      {/* ═══ CTA ═══ */}
-      <section className="relative overflow-hidden px-6 py-32 text-center md:py-40">
-        <div
-          className="absolute inset-0"
-          style={{
-            background: `radial-gradient(ellipse at center, ${C.slate}08 0%, transparent 70%)`,
-          }}
-        />
-        <motion.div
-          variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
-          className="relative mx-auto max-w-2xl"
-        >
-          <h2 className="text-3xl font-bold md:text-5xl">
-            다음 행운의 주인공은{" "}
-            <span
-              className="bg-clip-text text-transparent"
-              style={{ backgroundImage: `linear-gradient(135deg, ${C.slate}, ${C.cornflower}, ${C.maya})` }}
-            >
-              당신
-            </span>
-            입니다
-          </h2>
-          <p className="mt-6 text-lg text-[#102e4a]/50">
-            지금 가입하고 첫 캡슐을 열어보세요.
-          </p>
-          <div className="group relative mt-10 inline-block rounded-full p-[2px]">
-            <div
-              className="absolute inset-0 rounded-full opacity-60 blur-md transition group-hover:opacity-100"
-              style={{ background: `linear-gradient(135deg, ${C.periwinkle}, ${C.slate}, ${C.cornflower}, ${C.maya})` }}
-            />
-            <Link
-              href="/signup"
-              className="relative flex items-center gap-2 rounded-full px-10 py-4 text-lg font-bold text-white transition"
-              style={{ background: `linear-gradient(135deg, ${C.slate}, ${C.cornflower})` }}
-            >
-              무료로 시작하기
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="transition group-hover:translate-x-1">
-                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </Link>
-          </div>
-        </motion.div>
+      {/* ═══════════════ How it works ═══════════════ */}
+      <section id="how" className="py-16 md:py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <AnimatedSection>
+            <motion.div variants={fadeUp} className="mb-10 md:mb-14">
+              <h2 className="text-3xl md:text-[2.75rem] font-extrabold mb-4 tracking-tighter">
+                3단계로 즐기는 랜덤박스
+              </h2>
+              <p className="text-lg md:text-2xl text-[#7A7A7A] font-bold">
+                원하는 박스를 선택하고, 행운을 시험해보세요.
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {/* Step 1 */}
+              <motion.div variants={fadeUp} className="group cursor-pointer">
+                <div className="aspect-[16/10] rounded-[2rem] bg-[#FFF0F6] mb-6 flex flex-col items-center justify-center p-6 transition-all duration-700 hover:-translate-y-4 hover:shadow-2xl relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/0 via-[#F04EA3]/5 to-[#F04EA3]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                  <Gift size={50} className="text-[#F04EA3] animate-float" />
+                  <h3 className="text-xl font-extrabold text-[#F04EA3] mt-2">
+                    STEP 1
+                  </h3>
+                </div>
+                <h4 className="text-xl font-extrabold mb-2">박스 구매</h4>
+                <p className="text-[#7A7A7A]">
+                  다양한 테마의 박스 중 원하는 박스를 구매하세요.
+                </p>
+              </motion.div>
+
+              {/* Step 2 */}
+              <motion.div variants={fadeUp} className="group cursor-pointer">
+                <div className="aspect-[16/10] rounded-[2rem] bg-[#FFF0F5] mb-6 flex flex-col items-center justify-center p-6 transition-all duration-700 hover:-translate-y-4 hover:shadow-2xl relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/0 via-[#FFB3C6]/5 to-[#FFB3C6]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                  <PackageOpen
+                    size={50}
+                    className="text-[#FFB3C6] animate-float-delayed"
+                  />
+                  <h3 className="text-xl font-extrabold text-[#FFB3C6] mt-2">
+                    STEP 2
+                  </h3>
+                </div>
+                <h4 className="text-xl font-extrabold mb-2">박스 오픈</h4>
+                <p className="text-[#7A7A7A]">
+                  구매한 박스를 열어 당첨 상품을 바로 확인하세요.
+                </p>
+              </motion.div>
+
+              {/* Step 3 */}
+              <motion.div variants={fadeUp} className="group cursor-pointer">
+                <div className="aspect-[16/10] rounded-[2rem] bg-[#F0FAFF] mb-6 flex flex-col items-center justify-center p-6 transition-all duration-700 hover:-translate-y-4 hover:shadow-2xl relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/0 via-[#90E0EF]/5 to-[#90E0EF]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                  <RefreshCw
+                    size={50}
+                    className="text-[#90E0EF] animate-float"
+                  />
+                  <h3 className="text-xl font-extrabold text-[#90E0EF] mt-2">
+                    STEP 3
+                  </h3>
+                </div>
+                <h4 className="text-xl font-extrabold mb-2">배송 또는 분해</h4>
+                <p className="text-[#7A7A7A]">
+                  상품을 배송받거나 포인트로 분해하세요.
+                </p>
+              </motion.div>
+            </div>
+          </AnimatedSection>
+        </div>
       </section>
 
-      {/* ═══ Footer ═══ */}
-      <footer className="border-t border-[#102e4a]/5 px-6 py-8">
-        <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 text-sm text-[#102e4a]/30 md:flex-row">
-          <span className="flex items-center gap-1.5">&copy; 2026 <Logo size="sm" /> All rights reserved.</span>
-          <div className="flex gap-6">
-            <Link href="/login" className="transition hover:text-[#715aff]">로그인</Link>
-            <Link href="/signup" className="transition hover:text-[#715aff]">회원가입</Link>
+      {/* ═══════════════ Loved By You — Capsules Grid ═══════════════ */}
+      <section
+        id="capsules"
+        className="py-16 md:py-24 bg-white border-t border-gray-100"
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <AnimatedSection>
+            <motion.div variants={fadeUp} className="mb-8 md:mb-12">
+              <h2 className="text-3xl md:text-5xl font-black mb-3 text-[#F04EA3]">
+                Loved By You
+              </h2>
+              <p className="text-base md:text-lg text-[#7A7A7A] font-bold">
+                당신이 사랑하는 가장 핫한 박스들
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-x-4 gap-y-8">
+              {capsules.map((capsule, idx) => {
+                const IconComp = getCapsuleIcon(idx);
+                return (
+                  <motion.div
+                    key={capsule.id}
+                    variants={fadeUp}
+                    className="group"
+                  >
+                    <Link href={`/capsules/${capsule.id}`} className="block">
+                      <div className="aspect-square rounded-2xl bg-[#F8F9FA] mb-3 overflow-hidden relative flex items-center justify-center">
+                        {capsule.imageUrl ? (
+                          <Image
+                            src={capsule.imageUrl}
+                            alt={capsule.name}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        ) : (
+                          <IconComp
+                            size={40}
+                            className="text-[#F04EA3] opacity-40"
+                          />
+                        )}
+                      </div>
+                      <h3 className="text-sm font-extrabold line-clamp-1">
+                        {capsule.name}
+                      </h3>
+                      {capsule.description && (
+                        <p className="text-xs text-[#7A7A7A] line-clamp-2 mt-0.5">
+                          {capsule.description}
+                        </p>
+                      )}
+                      <p className="text-sm font-extrabold text-[#F04EA3] mt-1">
+                        {capsule.price.toLocaleString()}원
+                      </p>
+                    </Link>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </AnimatedSection>
+        </div>
+      </section>
+
+      {/* ═══════════════ Fever Section ═══════════════ */}
+      <section id="fever" className="py-16 md:py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <AnimatedSection>
+            <motion.div variants={fadeUp} className="mb-8 md:mb-10">
+              <h2 className="text-3xl md:text-[2.75rem] font-extrabold mb-3 tracking-tighter">
+                함께 채우는 피버 게이지
+              </h2>
+              <p className="text-lg md:text-2xl text-[#7A7A7A] font-bold">
+                Community Fever
+              </p>
+            </motion.div>
+
+            <motion.div
+              variants={fadeUp}
+              className="relative text-[#4A4A4A] flex flex-col lg:flex-row items-center justify-between"
+            >
+              {/* Left: Fever Info */}
+              <div className="lg:w-1/2 mb-10 lg:mb-0">
+                <div className="inline-block px-3 py-1 bg-[#F04EA3] text-white rounded-full text-[10px] font-extrabold mb-4">
+                  EVENT
+                </div>
+                <h3 className="text-3xl md:text-5xl font-extrabold mb-4 leading-tight">
+                  게이지가 100% 차면
+                  <br />
+                  <span className="text-[#F04EA3]">피버 타임</span>이
+                  시작됩니다!
+                </h3>
+                <div className="flex items-center space-x-4">
+                  <span className="text-5xl md:text-6xl font-black text-[#F04EA3]">
+                    {feverPercentage}%
+                  </span>
+                  <div className="flex-1">
+                    <div className="w-full bg-gray-100 rounded-full h-3 mb-2 overflow-hidden">
+                      <motion.div
+                        className="bg-[#F04EA3] h-full rounded-full"
+                        initial={{ width: 0 }}
+                        animate={{ width: `${feverPercentage}%` }}
+                        transition={{ duration: 1.2, ease: "easeOut" }}
+                      />
+                    </div>
+                    <div className="flex justify-between text-[11px] font-bold text-[#7A7A7A]">
+                      <span>현재 진행률</span>
+                      <span>목표까지 {100 - feverPercentage}%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right: Fever Stats Card */}
+              <div className="w-full lg:w-1/3 bg-[#F8F9FA] rounded-[1.5rem] p-6 shadow-xl border border-white">
+                <div className="space-y-3">
+                  <div className="flex justify-between text-base">
+                    <span className="text-[#7A7A7A] font-bold">목표 금액</span>
+                    <span className="font-extrabold">
+                      {feverTarget.toLocaleString()} P
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-base">
+                    <span className="text-[#7A7A7A] font-bold">현재 금액</span>
+                    <span className="font-extrabold">
+                      {feverCurrent.toLocaleString()} P
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </AnimatedSection>
+        </div>
+      </section>
+
+      {/* ═══════════════ Reviews Section ═══════════════ */}
+      {reviews.length > 0 && (
+        <section
+          id="reviews"
+          className="py-16 md:py-24 bg-[#F8F9FA] border-t border-gray-100"
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <AnimatedSection>
+              <motion.div variants={fadeUp} className="mb-8 md:mb-12">
+                <h2 className="text-3xl md:text-[2.75rem] font-extrabold mb-3 tracking-tighter">
+                  고객 후기
+                </h2>
+                <p className="text-lg md:text-2xl text-[#7A7A7A] font-bold">
+                  리얼 유저들의 생생한 후기
+                </p>
+              </motion.div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {reviews.map((review, idx) => (
+                  <motion.div
+                    key={idx}
+                    variants={fadeUp}
+                    className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100"
+                  >
+                    <div className="flex items-center mb-3">
+                      <div className="flex space-x-0.5">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <Sparkles
+                            key={i}
+                            size={14}
+                            className={
+                              i < review.rating
+                                ? "text-[#F04EA3]"
+                                : "text-gray-200"
+                            }
+                            fill={i < review.rating ? PINK : "none"}
+                          />
+                        ))}
+                      </div>
+                      <span className="ml-2 text-xs font-bold text-[#7A7A7A]">
+                        {review.productName}
+                      </span>
+                    </div>
+                    <p className="text-sm text-[#4A4A4A] mb-3 line-clamp-3">
+                      {review.content}
+                    </p>
+                    <p className="text-xs font-bold text-[#7A7A7A]">
+                      {review.nickname}
+                    </p>
+                  </motion.div>
+                ))}
+              </div>
+            </AnimatedSection>
           </div>
+        </section>
+      )}
+
+      {/* ═══════════════ Footer ═══════════════ */}
+      <footer className="bg-[#F8F9FA] text-[#7A7A7A] py-12 border-t border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="text-sm">
+            &copy; 2026 RANDOM BOX Corp. All rights reserved.
+          </p>
         </div>
       </footer>
     </div>
   );
 }
+
+export default LandingPage;
